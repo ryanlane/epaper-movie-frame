@@ -16,8 +16,9 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 ## Prerequisites
 
 - Python 3
-- OpenCV (`pip install opencv-python`)
+- [OpenCV](https://pypi.org/project/opencv-python/) (`pip install opencv-python`)
 - NumPy (`pip install numpy`)
+- [Inky](https://pypi.org/project/inky/) (`pip3 install inky[rpi,example-depends]`)
 
 ## Usage
 
@@ -93,6 +94,7 @@ You can find more information about my other projects on my site [http://ryanlan
 ## TO DO
 
 - [x] Update README.md
+- [x] Setup funding
 - [ ] add images to this document
 - [ ] Complete Inky display integration
 - [ ] Add Waveshare hardware
