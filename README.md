@@ -1,3 +1,5 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D81I8VM)
+
 # Video Playback and Frame Capture
 
 This Python script allows you to play back a video at a specified time interval, capturing and resizing frames along the way so that the still frame can be displayed on an ePaper style display. 
