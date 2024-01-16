@@ -9,8 +9,7 @@ In August 2020, Tom Whitwell further contributed to the concept with his post ["
 
 ### My Version
 
-Inspired by these pioneering works, this project aims to extend the concept of Very Slow Movie Players. By utilizing Python, OpenCV, and the [Pimoroni Inky Impression](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723) display, this version of the Movie Player strives to provide an accessible and customizable platform for enthusiasts to create their own cinematic experiences at an intentionally decelerated pace with the addition of color.
-
+Inspired by these pioneering works, this project aims to extend the concept of Very Slow Movie Players. By utilizing Python, OpenCV, and the [Pimoroni Inky Impression](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723) display, this version of the "movie player" strives to provide an accessible and customizable platform for enthusiasts to create their own cinematic experiences at an intentionally decelerated pace with the addition of color.
 
 ## Prerequisites
 
