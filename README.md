@@ -1,6 +1,6 @@
 # Video Playback and Frame Capture
 
-This Python script allows you to play back a video at a specified time interval, capturing and resizing frames along the way. It is designed to estimate the playback time and let you continue playback or start over.
+This Python script allows you to play back a video at a specified time interval, capturing and resizing frames along the way so that the still frame can be displayed on an ePaper style display. 
 
 ## Project Background and Inspiration
 This project draws inspiration from the December 2018 post by Bryan Boyer, titled [“Creating a Very Slow Movie Player”](https://medium.com/s/story/very-slow-movie-player-499f76c48b62). In his thought-provoking essay, Boyer explores the interplay of light, Brasília, and architecture. The focal point of his project is an e-paper display designed to showcase films at an extraordinarily slow rate of 24 frames per hour, in stark contrast to the conventional 24 frames per second. This unique approach transforms the viewing experience, requiring an entire year to play the 142-minute masterpiece, "2001: A Space Odyssey."
