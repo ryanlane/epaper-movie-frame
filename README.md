@@ -85,7 +85,8 @@ The `VideoSettings` class is used to manage video playback settings. It includes
 Ryan Lane
 You can find more information about my other projects on my site [http://ryanlane.com](http://ryanlane.com)
 
-```
+### Support me
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D81I8VM)
 
 ## TO DO
 [x] Update README.md
