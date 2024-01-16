@@ -319,4 +319,4 @@ def play_video(video_settings, logger):
 
     save_data_state(video_settings)
 
-# ... (rest of the functions remain the same)
+
