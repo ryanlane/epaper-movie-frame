@@ -90,6 +90,7 @@ You can find more information about my other projects on my site [http://ryanlan
 
 ## TO DO
 [x] Update README.md
+[ ] add images to this document
 [ ] Complete Inky display integration
 [ ] Add Waveshare hardware
 [ ] Build web based management
