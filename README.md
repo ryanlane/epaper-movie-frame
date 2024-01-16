@@ -89,8 +89,9 @@ You can find more information about my other projects on my site [http://ryanlan
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D81I8VM)
 
 ## TO DO
-[x] Update README.md
-[ ] add images to this document
-[ ] Complete Inky display integration
-[ ] Add Waveshare hardware
-[ ] Build web based management
+
+- [x] Update README.md
+- [ ] add images to this document
+- [ ] Complete Inky display integration
+- [ ] Add Waveshare hardware
+- [ ] Build web based management
