@@ -17,7 +17,7 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 - [OpenCV](https://opencv.org/) (`sudo apt install python3-opencv`) 
   -- Note: I recommend this method over `pip install opencv-python` due to performance issues on slower Pi hardware.
 - NumPy (`pip install numpy`) -- Note: This should already be installed by default.
-- [Inky](https://pypi.org/project/inky/) (`pip3 install inky[rpi,example-depends]`)
+- [Inky](https://pypi.org/project/inky/) (`pip install inky[rpi,example-depends]`)
 
 ## Usage
 
