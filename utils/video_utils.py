@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 import json
-import eframe_inky
+from utils import eframe_inky
 
 from datetime import datetime, timedelta
 

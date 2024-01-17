@@ -5,6 +5,7 @@ from inky.auto import auto
 inky = auto(ask_user=True, verbose=True)
 
 def get_inky_resolution():
+    print(f"inky res: {inky.resolution}")
     return inky.resolution
 
 def show_on_inky(imagepath, saturation = 0.5):
