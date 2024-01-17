@@ -28,7 +28,7 @@ def main():
     video_settings = video_utils.VideoSettings()
     video_settings.video_root_path = config_data.get('VIDEO_DIRECTORY')
     video_settings.output_image = config_data.get('OUTPUT_IMAGE_PATH')
-    new_res = eframe_inky.get_inky_resolution
+    new_res = eframe_inky.get_inky_resolution()
     print(f"display resolution: {new_res}")
     video_settings.resolution = new_res
 
