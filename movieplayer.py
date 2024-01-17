@@ -27,9 +27,9 @@ def main():
     video_settings = video_utils.VideoSettings()
     video_settings.video_root_path = config_data.get('VIDEO_DIRECTORY')
     video_settings.output_image = config_data.get('OUTPUT_IMAGE_PATH')
-    video_settings.resolution = eframe_inky.get_inky_resolution
-    print(video_settings.resolution)
-    
+    inkyres = eframe_inky.get_inky_resolution
+    video_settings.resolution = [inkyres[0], inkyres[1]]
+
     logger.info(f"logging level: {args.log_level}")
 
     if args.auto:
