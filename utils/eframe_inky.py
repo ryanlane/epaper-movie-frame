@@ -15,6 +15,7 @@ def show_on_inky(imagepath, saturation = 0.5):
     try:
         image = Image.open(imagepath)
         inky.set_image(image, saturation=saturation)
+        print("\n frame being displayed on inky")
         inky.show()
     except FileNotFoundError:
         print(f"Error: Image file not found at {imagepath}")

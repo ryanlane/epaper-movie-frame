@@ -277,6 +277,8 @@ def process_video(cap, video_settings):
     save_frame_as_image(final_size_frame, video_settings)
     
     progress_animation(100)
+
+    print("\n image processing completed \n")
     
 
 def progress_animation(percentage):
