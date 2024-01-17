@@ -13,6 +13,7 @@ def setup_logger(log_level):
 
 
 def main():
+    print("starting up")
     toml_file_path = 'config.toml'
     config_data = config.read_toml_file(toml_file_path)
     parser = argparse.ArgumentParser()
@@ -27,8 +28,7 @@ def main():
     video_settings = video_utils.VideoSettings()
     video_settings.video_root_path = config_data.get('VIDEO_DIRECTORY')
     video_settings.output_image = config_data.get('OUTPUT_IMAGE_PATH')
-    inkyres = eframe_inky.get_inky_resolution
-    video_settings.resolution = [inkyres[0], inkyres[1]]
+    video_settings.resolution  = eframe_inky.get_inky_resolution
 
     logger.info(f"logging level: {args.log_level}")
 
