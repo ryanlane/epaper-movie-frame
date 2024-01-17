@@ -15,7 +15,8 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 
 - Python 3
 - [OpenCV](https://pypi.org/project/opencv-python/) (`pip install opencv-python`)
-- NumPy (`pip install numpy`)
+  -- Note: This can take a while to install on older or slower pi models
+- NumPy (`pip install numpy`) -- Note: This should already be installed by default. If not it will get installed as a OpenCV dependency.
 - [Inky](https://pypi.org/project/inky/) (`pip3 install inky[rpi,example-depends]`)
 
 ## Usage
