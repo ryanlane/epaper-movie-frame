@@ -31,7 +31,7 @@ class VideoSettings:
         self.output_image = output_image
 
     def update_settings(self, **kwargs):
-        """Update the values of the instance variables."""
+        # Update the values of the instance variables.
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
@@ -39,13 +39,13 @@ class VideoSettings:
                 raise AttributeError(f"'VideoSettings' object has no attribute '{key}'")
 
     def load_from_json(self, json_file_path):
-        """Load values from a JSON file."""
+        # Load values from a JSON file.
         with open(json_file_path, 'r') as json_file:
             loaded_data = json.load(json_file)
         self.update_settings(**loaded_data)
 
     def to_dict(self):
-        """Convert instance variables to a dictionary."""
+        # Convert instance variables to a dictionary
         return {
             'video_path': self.video_path,
             'time_per_frame': self.time_per_frame,
@@ -55,7 +55,7 @@ class VideoSettings:
         }
 
     def save_to_json(self, json_file_path):
-        """Save instance variables to a JSON file."""
+        # Save instance variables to a JSON file
         with open(json_file_path, 'w') as json_file:
             json.dump(self.to_dict(), json_file)
 
@@ -258,21 +258,14 @@ def resize_with_black_borders(image, target_width, target_height):
 
 # Function to process a video, extract a specific frame, resize it, and save as an image
 def process_video(cap, video_settings):
-    progress_animation(0)
-    
-    
-    # # Get total number of frames in the video
-    # total_frames = get_total_frames(cap)
-    progress_animation(25)
-    # print(f"Total number of frames in the video: {total_frames}")
+    progress_animation(0)    
     
     # Extract the specified frame from the video
     movie_frame = extract_frame_as_image(cap, video_settings.current_frame)
-    progress_animation(50)
-    # Resize the frame with black borders to the target dimensions
-    print(f"{video_settings.resolution[0]}{video_settings.resolution[1]}")
+    progress_animation(30)
+    # Resize the frame with black borders to the target dimensions    
     final_size_frame = resize_with_black_borders(movie_frame, video_settings.resolution[0], video_settings.resolution[1])
-    progress_animation(75)
+    progress_animation(60)
     # Save the resized frame as an image
     save_frame_as_image(final_size_frame, video_settings)
     
@@ -311,17 +304,37 @@ def playback_init(video_settings, logger):
         captured_video.release()
 
 def play_video(video_settings, logger):
+    # Log the path of the selected video
     logger.info(video_settings.video_path)
+    
+    # Store the path of the selected video
     selected_video = video_settings.video_path
+    
+    # Retrieve the current frame for rendering
     current_frame = video_settings.current_frame
+    
+    # Log the information about the rendering frame
     logger.info(f"Rendering frame - {current_frame}")
+    
+    # Render playback time
     render_playback_time(video_settings)
+    
+    # Open the video file for capturing frames
     captured_video = cv2.VideoCapture(selected_video)
+    
+    # Process the video to extract, resize, and save the frame
     process_video(captured_video, video_settings)
+    
+    # Show the processed frame on the e-ink display
     eframe_inky.show_on_inky(video_settings.output_image)
+    
+    # Calculate the next frame to be displayed
     new_frame = current_frame + video_settings.skip_frames
+    
+    # Update the current frame in the VideoSettings instance
     video_settings.current_frame = new_frame
-
+    
+    # Save the updated video settings to maintain state
     save_data_state(video_settings)
 
 
