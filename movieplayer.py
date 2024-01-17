@@ -2,7 +2,6 @@ import time
 import logging
 import argparse
 from utils import video_utils, eframe_inky, config
-# from video_utils import VideoSettings, playback_init, play_video
 
 def setup_logger(log_level):
     logging.basicConfig(level=log_level,
