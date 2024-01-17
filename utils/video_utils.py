@@ -3,6 +3,7 @@ import numpy as np
 import os
 import sys
 import json
+import eframe_inky
 
 from datetime import datetime, timedelta
 
@@ -273,7 +274,8 @@ def process_video(cap, video_settings):
     final_size_frame = resize_with_black_borders(movie_frame, video_settings.resolution[0], video_settings.resolution[1])
     progress_animation(75)
     # Save the resized frame as an image
-    save_frame_as_image(final_size_frame, video_settings) 
+    save_frame_as_image(final_size_frame, video_settings)
+    
     progress_animation(100)
     
 
@@ -314,6 +316,7 @@ def play_video(video_settings, logger):
     render_playback_time(video_settings)
     captured_video = cv2.VideoCapture(selected_video)
     process_video(captured_video, video_settings)
+    eframe_inky.show_on_inky(video_settings.output_image)
     new_frame = current_frame + video_settings.skip_frames
     video_settings.current_frame = new_frame
 
