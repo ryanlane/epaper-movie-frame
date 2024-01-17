@@ -14,9 +14,9 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 ## Prerequisites
 
 - Python 3
-- [OpenCV](https://pypi.org/project/opencv-python/) (`pip install opencv-python`)
-  -- Note: This can take a while to install on older or slower pi models
-- NumPy (`pip install numpy`) -- Note: This should already be installed by default. If not it will get installed as a OpenCV dependency.
+- [OpenCV](https://opencv.org/) (`sudo apt install python3-opencv`) 
+  -- Note: I recommend this method over `pip install opencv-python` due to performance issues on slower Pi hardware.
+- NumPy (`pip install numpy`) -- Note: This should already be installed by default.
 - [Inky](https://pypi.org/project/inky/) (`pip3 install inky[rpi,example-depends]`)
 
 ## Usage
