@@ -22,6 +22,17 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 - [python-dotenv] (https://github.com/theskumar/python-dotenv)(`pip install python-dotenv`)
 - [Pillow](https://python-pillow.org/) (`pip install Pillow`)
 
+There is a dependency installer script included. 
+Make the script executable:
+```bash
+chmod +x install_dependencies.sh
+```
+
+Run the script:
+```bash
+./install_dependencies.sh
+```
+
 ## Usage
 
 1. Clone this repository to your local machine:
