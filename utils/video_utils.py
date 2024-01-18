@@ -316,9 +316,7 @@ def play_video(video_settings, logger):
     # Log the information about the rendering frame
     logger.info(f"Rendering frame - {current_frame}")
     
-    # Render playback time
-    render_playback_time(video_settings)
-    
+       
     # Open the video file for capturing frames
     captured_video = cv2.VideoCapture(selected_video)
     
@@ -334,6 +332,9 @@ def play_video(video_settings, logger):
     # Update the current frame in the VideoSettings instance
     video_settings.current_frame = new_frame
     
+    # Render playback time
+    render_playback_time(video_settings)
+
     # Save the updated video settings to maintain state
     save_data_state(video_settings)
 
