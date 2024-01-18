@@ -327,7 +327,12 @@ def play_video(video_settings, logger):
     eframe_inky.show_on_inky(video_settings.output_image)
     
     # Calculate the next frame to be displayed
-    new_frame = current_frame + video_settings.skip_frames
+    nextframe = current_frame + video_settings.skip_frame
+    if nextframe <= video_settings.total_frames:
+        new_frame = nextframe
+    else:
+        # for now we'll start over
+        new_frame = 0
     
     # Update the current frame in the VideoSettings instance
     video_settings.current_frame = new_frame
