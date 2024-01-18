@@ -12,11 +12,11 @@ In August 2020, Tom Whitwell further contributed to the concept with his post ["
 Inspired by these pioneering works, this project aims to extend the concept of Very Slow Movie Players. By utilizing Python, OpenCV, and the [Pimoroni Inky Impression](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723) display, this version of the "movie player" strives to provide an accessible and customizable platform for enthusiasts to create their own cinematic experiences at an intentionally decelerated pace with the addition of color.
 
 ## Prerequisites
-### hardware
+### hard parts
 - [Raspberry Pi](https://www.raspberrypi.com/products/)
 - [Pimoroni Inky](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723) epaper display (Other Inky variants may work)
 
-### Software
+### soft parts
 - Python 3
 - [pip](https://pip.pypa.io/en/stable/) (`sudo apt-get install -y python3-pip`)
 - [OpenCV](https://opencv.org/) (`sudo apt install python3-opencv`) 
