@@ -311,10 +311,11 @@ def play_video(video_settings, logger):
     selected_video = video_settings.video_path
     
     # Retrieve the current frame for rendering
-    current_frame = video_settings.current_frame
-    
+    if video_settings.current_frame >= video_settings.total_frames:
+        video_settings.current_frame = 0
+
     # Log the information about the rendering frame
-    logger.info(f"Rendering frame - {current_frame}")
+    logger.info(f"Rendering frame - {video_settings.current_frame}")
     
        
     # Open the video file for capturing frames
@@ -327,7 +328,7 @@ def play_video(video_settings, logger):
     eframe_inky.show_on_inky(video_settings.output_image)
     
     # Calculate the next frame to be displayed
-    nextframe = current_frame + video_settings.skip_frame
+    nextframe = video_settings.current_frame + video_settings.skip_frames
     if nextframe <= video_settings.total_frames:
         new_frame = nextframe
     else:
