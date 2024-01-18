@@ -22,38 +22,41 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 - [python-dotenv] (https://github.com/theskumar/python-dotenv)(`pip install python-dotenv`)
 - [Pillow](https://python-pillow.org/) (`pip install Pillow`)
 
-There is a dependency installer script included. 
-Make the script executable:
-```bash
-chmod +x install_dependencies.sh
-```
-
-Run the script:
-```bash
-./install_dependencies.sh
-```
 
 ## Usage
 
-1. Clone this repository to your local machine:
+1. **Clone this repository to your local machine**:
 
    ```bash
    git clone https://github.com/ryanlane/epaper-movie-frame.git
    ```
 
-2. Navigate to the script's directory:
+2. **Navigate to the script's directory**:
 
    ```bash
    cd epaper-movie-frame
    ```
 
-3. Run the script:
+3. **If needed run the dependecy installer script**.
+
+
+   Make the script executable:
+   ```bash
+   chmod +x install_dependencies.sh
+   ```
+
+   Run the script:
+   ```bash
+   ./install_dependencies.sh
+   ```
+
+4. **Run the script**:
 
    ```bash
    python movieplayer.py
    ```
 
-4. Follow the on-screen prompts to select a video, set update intervals, frames to skip, and start the playback.
+5. Follow the on-screen prompts to select a video, set update intervals, frames to skip, and start the playback.
 
 ## Configuration
 
