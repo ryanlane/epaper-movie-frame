@@ -10,7 +10,10 @@ def setup_logger(log_level):
     logger = logging.getLogger(__name__)
     return logger
 
-
+def keyboard_control(video_settings,logger):
+    while True:
+        if keyboard.is_pressed('u'):
+            video_utils.play_video(video_settings,logger)
 
 def main():
     print("starting up")
@@ -39,8 +42,7 @@ def main():
                 video_utils.load_data_state(video_settings)            
                 video_utils.play_video(video_settings,logger)
                 print
-                time.sleep(video_settings.time_per_frame / 1000)
-        
+                time.sleep(video_settings.time_per_frame / 1000)        
         
     else:
         video_utils.playback_init(video_settings,logger)
@@ -51,8 +53,7 @@ def main():
             print(video_settings.video_path)
             video_utils.play_video(video_settings,logger)
             
-            time.sleep(video_settings.time_per_frame / 1000)
-           
+            time.sleep(video_settings.time_per_frame / 1000)           
         
 if __name__ == "__main__":
     try:
