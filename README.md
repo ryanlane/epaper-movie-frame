@@ -14,11 +14,13 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 ## Prerequisites
 
 - Python 3
+- [pip](https://pip.pypa.io/en/stable/) (`sudo apt-get install -y python3-pip`)
 - [OpenCV](https://opencv.org/) (`sudo apt install python3-opencv`) 
   -- Note: I recommend this method over `pip install opencv-python` due to performance issues on slower Pi hardware.
 - NumPy (`pip install numpy`) -- Note: This should already be installed by default.
 - [Inky](https://pypi.org/project/inky/) (`pip install inky[rpi,example-depends]`)
-- [python-dotenv](https://github.com/theskumar/python-dotenv)(`pip install python-dotenv`)
+- [python-dotenv] (https://github.com/theskumar/python-dotenv)(`pip install python-dotenv`)
+- [Pillow](https://python-pillow.org/) (`pip install Pillow`)
 
 ## Usage
 
@@ -26,7 +28,7 @@ Inspired by these pioneering works, this project aims to extend the concept of V
 
    ```bash
    git clone https://github.com/ryanlane/epaper-movie-frame.git
-
+   ```
 
 2. Navigate to the script's directory:
 
