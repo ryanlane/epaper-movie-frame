@@ -3,9 +3,7 @@
 This Python script allows you to play back a video at a specified time interval, capturing and resizing frames along the way so that the still frame can be displayed on an ePaper style display. 
 
 ## Project Background and Inspiration
-This project draws inspiration from the December 2018 post by Bryan Boyer, titled [“Creating a Very Slow Movie Player”](https://medium.com/s/story/very-slow-movie-player-499f76c48b62). In his thought-provoking essay, Boyer explores the interplay of light, Brasília, and architecture. The focal point of his project is an e-paper display designed to showcase films at an extraordinarily slow rate of 24 frames per hour, in stark contrast to the conventional 24 frames per second. This unique approach transforms the viewing experience, requiring an entire year to play the 142-minute masterpiece, "2001: A Space Odyssey."
-
-In August 2020, Tom Whitwell further contributed to the concept with his post ["How to Build a Very Slow Movie Player for £120 in 2020"](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4)". Whitwell provided detailed instructions on constructing a Very Slow Movie Player (VSMP) using the then-new [7.5-inch, Raspberry Pi-compatible e-paper display from Waveshare](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm).
+This project draws inspiration from the December 2018 post by Bryan Boyer, titled [“Creating a Very Slow Movie Player”](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) and the August 2020, Tom Whitwell project post ["How to Build a Very Slow Movie Player for £120 in 2020"](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4)". Whitwell provided detailed instructions on constructing a Very Slow Movie Player (VSMP) using the then-new [7.5-inch, Raspberry Pi-compatible e-paper display from Waveshare](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). I have used several Waveshare screens as well, but have had mixed success around stability and quality of their hardware. At least with their larger epaper displays. 
 
 ### My Version
 
