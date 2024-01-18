@@ -115,5 +115,6 @@ You can find more information about my other projects on my site [http://ryanlan
 - [x] Setup funding
 - [x] Complete Inky display integration
 - [ ] add images to this document
-- [ ] Add Waveshare hardware
+- [ ] Add playback folder or playlist support
 - [ ] Build web based management
+- [ ] Add Waveshare hardware support
