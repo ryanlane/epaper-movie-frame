@@ -119,7 +119,7 @@ You can find more information about my other projects on my site [http://ryanlan
 - [x] Update README.md
 - [x] Setup funding
 - [x] Complete Inky display integration
-- [ ] add images to this document
+- [x] add images to this document
 - [ ] Add playback folder or playlist support
 - [ ] Build web based management
 - [ ] Add Waveshare hardware support
