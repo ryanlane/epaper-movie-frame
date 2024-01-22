@@ -6,8 +6,13 @@ This Python script allows you to play back a video at a specified time interval,
 This project draws inspiration from the December 2018 post by Bryan Boyer, titled [“Creating a Very Slow Movie Player”](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) and the August 2020, Tom Whitwell project post ["How to Build a Very Slow Movie Player for £120 in 2020"](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4)". Whitwell provided detailed instructions on constructing a Very Slow Movie Player (VSMP) using the then-new [7.5-inch, Raspberry Pi-compatible e-paper display from Waveshare](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). I have used several Waveshare screens as well, but have had mixed success around stability and quality of their hardware. At least with their larger epaper displays. 
 
 ### My Version
+![photo of a frame showing a frame from the TV mini series Scavengers Reign](https://images.squarespace-cdn.com/content/v1/596ebdf720099ea43cf390d8/380eb70e-eb34-433f-92f6-c1fd0e31f202/IMG_0953.jpeg?format=1500w)
 
 Inspired by these pioneering works, this project aims to extend the concept of Very Slow Movie Players. By utilizing Python, OpenCV, and the [Pimoroni Inky Impression](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723) display, this version of the "movie player" strives to provide an accessible and customizable platform for enthusiasts to create their own cinematic experiences at an intentionally decelerated pace with the addition of color.
+
+### Video sample
+
+[![Here's a sample video of the frame update](https://images.squarespace-cdn.com/content/v1/596ebdf720099ea43cf390d8/1705546388868-3GXMSA9B65L9FSGBE0T2/IMG_0956.jpeg?format=1000w)](https://youtu.be/L7wVuyFQOXI)
 
 ## Prerequisites
 ### hard parts
