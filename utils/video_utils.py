@@ -315,7 +315,7 @@ def play_video(video_settings, logger):
         video_settings.current_frame = 0
 
     # Log the information about the rendering frame
-    logger.info(f"Rendering frame - {video_settings.current_frame}")
+    logger.info(f"Rendering frame - {video_settings.current_frame} of {video_settings.total_frames}")
     
        
     # Open the video file for capturing frames
