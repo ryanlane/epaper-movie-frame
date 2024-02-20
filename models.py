@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
-from database import Base  
+from database import Base
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -13,4 +13,5 @@ class Movie(Base):
     isRandom = Column(Boolean)
     isActive = Column(Boolean)
     started_at = Column(DateTime)
+    last_updated = Column(DateTime)
 
