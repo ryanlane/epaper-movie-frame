@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Selection Form</title>
+</head>
+<body>
+    <h1>Video Selection Form</h1>
+    <form method="post">
+        <label for="selected_video">Select a video:</label>
+        <select name="selected_video" id="selected_video">
+            {% for video_file in video_files %}
+            <option value="{{ video_file }}">{{ video_file }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="update_interval">Select update interval:</label>
+        <select name="update_interval" id="update_interval">
+            <option value="10">Every 10 minutes</option>
+            <option value="60">Every hour</option>
+            <option value="1440">Every day</option>
+            <option value="other">Other (provide custom time in minutes)</option>
+        </select>
+        <br>
+        <div id="custom_time" style="display: none;">
+            <label for="custom_time">Custom time (minutes):</label>
+            <input type="number" name="custom_time" id="custom_time" min="1" value="10">
+        </div>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        document.getElementById("update_interval").addEventListener("change", function() {
+            var customTime = document.getElementById("custom_time");
+            if (this.value === "other") {
+                customTime.style.display = "block";
+            } else {
+                customTime.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
