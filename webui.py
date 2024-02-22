@@ -10,7 +10,11 @@ from sqlalchemy.orm import Session
 import models
 from database import SessionLocal, engine
 
-from utils import video_utils
+from utils import video_utils, eframe_inky
+
+logger = logging.getLogger(__name__)
+handler = RotatingFileHandler('webui.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.DEBUG)
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -25,7 +29,20 @@ def get_db():
     finally:
         db.close()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")        
+app.mount("/static", StaticFiles(directory="static"), name="static")      
+
+@app.on_event("startup")
+async def startup_event():
+   logger.info("Starting up webui")
+   db = SessionLocal()
+   settings = db.query(models.Settings).first()
+
+   if not settings:
+       settings = models.Settings(VideoRootPath="videos", Resolution="800,600")
+       db.add(settings)
+       db.commit()
+
+
 
 # Define a route for the home page
 @app.get('/')
@@ -40,7 +57,7 @@ def first_run(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("firstrun.html", {"request": request, "movies": available_movies})
 
 @app.get('/movie/{movie_id}')
-def home(request: Request, movie_id: int, db: Session = Depends(get_db)):
+def movie(request: Request, movie_id: int, db: Session = Depends(get_db)):
     movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
     return templates.TemplateResponse("movie_settings.html", {"request": request, "movie": movie})
 
@@ -53,9 +70,13 @@ def add_movie(request: Request, db: Session = Depends(get_db), video_path: str =
     # if existingMovie exists then redirect to update_movie
 
     if existingMovie:
-        url = app.url_path_for('update_movie', movie_id=existingMovie.id)
+        url = app.url_path_for('movie', movie_id=existingMovie.id)
         return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
-    else:        
+    else: 
+        movie.total_frames = video_utils.get_total_frames(video_path)
+        movie.time_per_frame = 60
+        movie.skip_frames = 1
+        movie.isActive = False     
         db.add(movie)
         db.commit()
 
@@ -71,7 +92,7 @@ def update_movie(
     custom_time: int = Form(...),
     skip_frames: int = Form(...),
     current_frame: int = Form(...),
-    isRandom: bool = Form(...),
+    isRandom: bool = Form(False),
 ):
 
     movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
@@ -81,7 +102,8 @@ def update_movie(
     movie.time_per_frame = time_per_frame
     movie.skip_frames = skip_frames
     movie.current_frame = current_frame
-    movie.isRandom = isRandom
+    isRandom = isRandom if isRandom is not None else False
+    movie.isRandom = isRandom 
 
     #update database record
     db.add(movie)
