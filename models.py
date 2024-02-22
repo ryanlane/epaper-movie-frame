@@ -15,3 +15,10 @@ class Movie(Base):
     started_at = Column(DateTime)
     last_updated = Column(DateTime)
 
+class Settings(Base):
+    __tablename__ = "settings"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    VideoRootPath = Column(String)
+    Resolution = Column(String)
+    
