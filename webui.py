@@ -45,7 +45,7 @@ def home(request: Request, movie_id: int, db: Session = Depends(get_db)):
     return templates.TemplateResponse("movie_settings.html", {"request": request, "movie": movie})
 
 # Move the decorator above the function declaration
-@app.post('/add_movie/')
+@app.post('/add_movie')
 def add_movie(request: Request, db: Session = Depends(get_db), video_path: str = Form(...)):
     movie = models.Movie(video_path=video_path)
     existingMovie = db.query(models.Movie).filter(models.Movie.video_path == video_path).first()
@@ -62,14 +62,35 @@ def add_movie(request: Request, db: Session = Depends(get_db), video_path: str =
         url = app.url_path_for('home')
         return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
 
-@app.post('/update_movie/{movie_id}')
-def update_movie(request: Request, movie_id: int, db: Session = Depends(get_db)):
+@app.post('/update_movie')
+def update_movie(
+    request: Request,
+    db: Session = Depends(get_db), 
+    movie_id: int = Form(...),
+    time_per_frame: int = Form(...),
+    custom_time: int = Form(...),
+    skip_frames: int = Form(...),
+    current_frame: int = Form(...),
+    isRandom: bool = Form(...),
+):
+
     movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
-    movie.isActive = not movie.isActive
+    # movie.isActive = not movie.isActive
+    if time_per_frame == 0:
+        time_per_frame = custom_time
+    movie.time_per_frame = time_per_frame
+    movie.skip_frames = skip_frames
+    movie.current_frame = current_frame
+    movie.isRandom = isRandom
+
+    #update database record
+    db.add(movie)
     db.commit()
 
-    url = app.url_path_for('home')
-    return RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
+    # url = app.url_path_for('home')
+    # return RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
+
+    return JSONResponse(status_code=status.HTTP_302_FOUND, content={"message": f"{movie_id} Movie item updated successfully"})
 
 @app.post('/delete_movie/{movie_id}')
 def delete_movie(request: Request, movie_id: int, db: Session = Depends(get_db)):

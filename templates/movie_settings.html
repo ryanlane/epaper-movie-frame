@@ -14,12 +14,17 @@
             <option value="10" {% if movie.time_per_frame == 10 %} selected {% endif %}>Every 10 minutes</option>
             <option value="60" {% if movie.time_per_frame == 60 %} selected {% endif %}>Every hour</option>
             <option value="1440" {% if movie.time_per_frame == 1440 %} selected {% endif %}>Every day</option>
-            <option value="other" {% if not movie.time_per_frame in  [10,60,1300] %} selected {% endif %}>Other (provide custom time in minutes)</option>
+            <option value="0" {% if not movie.time_per_frame in  [10,60,1300] %} selected {% endif %}>Other (provide custom time in minutes)</option>
         </select>
         <br>
         <div id="custom_time" {% if movie.time_per_frame in  [10,60,1300] %} style="display: none;" {% endif %}>
-            <label for="time_per_frame">Custom time (minutes):</label>
-            <input type="number" name="time_per_frame" id="time_per_frame" min="1" value="{{movie.time_per_frame}}">
+            <label for="custom_time">Custom time (minutes):</label>
+            {% if movie.time_per_frame == true %}
+                {% set ct = movie.time_per_frame %}
+            {% else %}
+                {% set ct = 0 %}
+            {% endif %}
+            <input type="number" name="custom_time" id="custom_time" min="0" value="{{ ct }}">
         </div>
         <br>
         <div id="skip_frames">
@@ -40,7 +45,7 @@
     <script>
         document.getElementById("time_per_frame").addEventListener("change", function() {
             var customTime = document.getElementById("custom_time");
-            if (this.value === "other") {
+            if (this.value === "0") {
                 customTime.style.display = "block";
             } else {
                 customTime.style.display = "none";
