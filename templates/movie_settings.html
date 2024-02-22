@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings for {{ movie.video_path }}</title>
+</head>
+<body>
+    <h1>Settings for {{ movie.video_path }}</h1>
+    <form action="/update_movie" method="post">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <label for="time_per_frame">Select update interval:</label>
+        <select name="time_per_frame" id="time_per_frame">
+            <option value="10" {% if movie.time_per_frame == 10 %} selected {% endif %}>Every 10 minutes</option>
+            <option value="60" {% if movie.time_per_frame == 60 %} selected {% endif %}>Every hour</option>
+            <option value="1440" {% if movie.time_per_frame == 1440 %} selected {% endif %}>Every day</option>
+            <option value="other" {% if not movie.time_per_frame in  [10,60,1300] %} selected {% endif %}>Other (provide custom time in minutes)</option>
+        </select>
+        <br>
+        <div id="custom_time" {% if movie.time_per_frame in  [10,60,1300] %} style="display: none;" {% endif %}>
+            <label for="time_per_frame">Custom time (minutes):</label>
+            <input type="number" name="time_per_frame" id="time_per_frame" min="1" value="{{movie.time_per_frame}}">
+        </div>
+        <br>
+        <div id="skip_frames">
+            <label for="skip_frames">number of frames to skip per update:</label>
+            <input type="number" name="skip_frames" id="skip_frames" min="1" value="1">
+        </div>
+        <div id="current_frame">
+            <label for="current_frame">Current active frame (this is also the starting frame for first runs): </label>
+            <input type="number" name="current_frame" id="current_frame" min="1" value="1">
+        </div>
+        <div id="isRandom">
+            <label for="isRandom">You love chaos and would prefer to just have a random frame at every interval</label>
+            <input type="checkbox" name="isRandom" id="isRandom" {% if movie.isRandom %} checked {% endif %}>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        document.getElementById("time_per_frame").addEventListener("change", function() {
+            var customTime = document.getElementById("custom_time");
+            if (this.value === "other") {
+                customTime.style.display = "block";
+            } else {
+                customTime.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>

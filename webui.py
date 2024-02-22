@@ -39,6 +39,11 @@ def first_run(request: Request, db: Session = Depends(get_db)):
     available_movies = video_utils.list_video_files("videos/")
     return templates.TemplateResponse("firstrun.html", {"request": request, "movies": available_movies})
 
+@app.get('/movie/{movie_id}')
+def home(request: Request, movie_id: int, db: Session = Depends(get_db)):
+    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+    return templates.TemplateResponse("movie_settings.html", {"request": request, "movie": movie})
+
 # Move the decorator above the function declaration
 @app.post('/add_movie/')
 def add_movie(request: Request, db: Session = Depends(get_db), video_path: str = Form(...)):
