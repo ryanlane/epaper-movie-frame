@@ -202,8 +202,9 @@ def get_frames_to_skip():
         return default_frames_to_skip
 
 # Function to get the total number of frames in a video
-def get_total_frames(cap):
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+def get_total_frames(video_path):
+    captured_video = cv2.VideoCapture(f"videos/{video_path}")
+    total_frames = int(captured_video.get(cv2.CAP_PROP_FRAME_COUNT))
     return total_frames
 
 # Function to extract a specific frame as an image
@@ -258,20 +259,20 @@ def resize_with_black_borders(image, target_width, target_height):
 
 # Function to process a video, extract a specific frame, resize it, and save as an image
 def process_video(cap, video_settings):
-    progress_animation(0)    
+    # progress_animation(0)    
     
     # Extract the specified frame from the video
     movie_frame = extract_frame_as_image(cap, video_settings.current_frame)
-    progress_animation(30)
+    # progress_animation(30)
     # Resize the frame with black borders to the target dimensions    
     final_size_frame = resize_with_black_borders(movie_frame, video_settings.resolution[0], video_settings.resolution[1])
-    progress_animation(60)
+    # progress_animation(60)
     # Save the resized frame as an image
     save_frame_as_image(final_size_frame, video_settings)
     
-    progress_animation(100)
+    # progress_animation(100)
 
-    print("\n image processing completed \n")
+    # print("\n image processing completed \n")
     
 
 def progress_animation(percentage):
