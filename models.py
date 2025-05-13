@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from database import Base
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -16,18 +16,18 @@ class Movie(Base):
     started_at = Column(DateTime)
     last_updated = Column(DateTime)
 
-class movieSetting(BaseModel):
+@dataclass
+class MovieSetting:
     id: int
     time_per_frame: int
     custom_time: int
     skip_frames: int
     current_frame: int
     isRandom: bool
-    
+
 class Settings(Base):
     __tablename__ = "settings"
     
     id = Column(Integer, primary_key=True, index=True)
     VideoRootPath = Column(String)
     Resolution = Column(String)
-    
