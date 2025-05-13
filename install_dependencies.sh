@@ -25,7 +25,7 @@ echo "📦 Installing Python dependencies..."
 pip install inky[rpi,example-depends] \
             python-dotenv numpy Pillow \
             fastapi "uvicorn[standard]" \
-            python-multipart sqlalchemy jinja2 pydantic
+            python-multipart sqlalchemy jinja2
 
 echo "✅ All dependencies installed."
 
