@@ -4,6 +4,7 @@ import os
 import sys
 import json
 from utils import eframe_inky
+import models
 
 from datetime import datetime, timedelta
 
@@ -202,8 +203,9 @@ def get_frames_to_skip():
         return default_frames_to_skip
 
 # Function to get the total number of frames in a video
-def get_total_frames(cap):
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+def get_total_frames(video_path):
+    captured_video = cv2.VideoCapture(f"videos/{video_path}")
+    total_frames = int(captured_video.get(cv2.CAP_PROP_FRAME_COUNT))
     return total_frames
 
 # Function to extract a specific frame as an image
@@ -222,9 +224,13 @@ def render_playback_time(video_settings):
     print(f"next frame will be displayed: {future_frame}")
 
 # Function to save a frame as an image with specified quality
-def save_frame_as_image(frame, video_settings):
-    cv2.imwrite(video_settings.output_image, frame, [cv2.IMWRITE_JPEG_QUALITY, 90])
-    # print(f"Frame {frame_number} saved as {output_path}")
+def save_frame_as_image(frame, movie):
+    directory = f"static/{movie.id}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    cv2.imwrite(f"{directory}/frame.jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    
 
 # Function to resize an image while maintaining its aspect ratio and adding black borders
 def resize_with_black_borders(image, target_width, target_height):
@@ -257,21 +263,23 @@ def resize_with_black_borders(image, target_width, target_height):
 
 
 # Function to process a video, extract a specific frame, resize it, and save as an image
-def process_video(cap, video_settings):
-    progress_animation(0)    
+def process_video(movie, settings):
+    captured_video = cv2.VideoCapture(f"{settings.VideoRootPath}/{movie.video_path}")
+    resolution_string = settings.Resolution.split(',')
+    resolution = [int(x) for x in resolution_string]
     
     # Extract the specified frame from the video
-    movie_frame = extract_frame_as_image(cap, video_settings.current_frame)
-    progress_animation(30)
+    movie_frame = extract_frame_as_image(captured_video, movie.current_frame)
+    # progress_animation(30)
     # Resize the frame with black borders to the target dimensions    
-    final_size_frame = resize_with_black_borders(movie_frame, video_settings.resolution[0], video_settings.resolution[1])
-    progress_animation(60)
+    final_size_frame = resize_with_black_borders(movie_frame, resolution[0], resolution[1])
+    # progress_animation(60)
     # Save the resized frame as an image
-    save_frame_as_image(final_size_frame, video_settings)
+    save_frame_as_image(final_size_frame, movie)
     
-    progress_animation(100)
+    # progress_animation(100)
 
-    print("\n image processing completed \n")
+    # print("\n image processing completed \n")
     
 
 def progress_animation(percentage):

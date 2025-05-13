@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
+
+import threading
 import time
 import logging
 import argparse
 from utils import video_utils, eframe_inky, config
+from web import webui
+
 
 def setup_logger(log_level):
     logging.basicConfig(level=log_level,
@@ -14,6 +19,9 @@ def keyboard_control(video_settings,logger):
     while True:
         if keyboard.is_pressed('u'):
             video_utils.play_video(video_settings,logger)
+
+def run_webui():
+    webui.app   
 
 def main():
     print("starting up")
@@ -57,7 +65,18 @@ def main():
         
 if __name__ == "__main__":
     try:
-        main()
+        run_webui()
+        # # Create and start threads for webui.app.run() and main()
+        
+        # main_thread = threading.Thread(target=main)
+        # webui_thread = threading.Thread(target=run_webui)
+
+        # webui_thread.start()
+        # main_thread.start()
+
+        # # Join threads to ensure they finish execution before the main thread exits
+        # webui_thread.join()
+        # main_thread.join()      
     except KeyboardInterrupt:
         print('stopped')
 

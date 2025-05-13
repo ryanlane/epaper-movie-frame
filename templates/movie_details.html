@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings for {{ movie.video_path }}</title>
+</head>
+<body>
+    <h1>Settings for {{ movie.video_path }}</h1>
+    <form id="movieForm">
+        <input type="hidden" name="id" value="{{ movie.id }}">
+        <label for="time_per_frame">Select update interval:</label>
+        <select name="time_per_frame" id="time_per_frame">
+            <option value="10" {% if movie.time_per_frame == 10 %} selected {% endif %}>Every 10 minutes</option>
+            <option value="60" {% if movie.time_per_frame == 60 %} selected {% endif %}>Every hour</option>
+            <option value="1440" {% if movie.time_per_frame == 1440 %} selected {% endif %}>Every day</option>
+            <option value="0" {% if not movie.time_per_frame in  [10,60,1300] %} selected {% endif %}>Other (provide custom time in minutes)</option>
+        </select>
+        <br>
+        <div id="custom_time" {% if movie.time_per_frame in  [10,60,1300] %} style="display: none;" {% endif %}>
+            <label for="custom_time">Custom time (minutes):</label>
+            {% if movie.time_per_frame == true %}
+                {% set ct = movie.time_per_frame %}
+            {% else %}
+                {% set ct = 0 %}
+            {% endif %}
+            <input type="number" name="custom_time" id="custom_time" min="0" value="{{ ct }}">
+        </div>
+        <br>
+        <div id="skip_frames">
+            <label for="skip_frames">number of frames to skip per update:</label>
+            <input type="number" name="skip_frames" id="skip_frames" min="1" value="{{ movie.skip_frames}}">
+        </div>
+        <div id="current_frame">
+            <label for="current_frame">Current active frame (this is also the starting frame for first runs): </label>
+            <input type="number" name="current_frame" id="current_frame" min="1" value="{{ movie.current_frame}}">
+        </div>
+        <div id="isRandom">
+            <label for="isRandom">You love chaos and would prefer to just have a random frame at every interval</label>
+            <input type="checkbox" name="isRandom" id="isRandom" value="True" {% if movie.isRandom %} checked {% endif %}>
+        </div>
+        <button id="submitButton">Submit</button>
+    </form>
+    {% set stringID = movie.id | string() %}
+    <img src="{{ url_for('static', path='' + stringID + '/frame.jpg') }}" />
+
+    <script>
+        document.getElementById("time_per_frame").addEventListener("change", function() {
+            var customTime = document.getElementById("custom_time");
+            if (this.value === "0") {
+                customTime.style.display = "block";
+            } else {
+                customTime.style.display = "none";
+            }
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            var form = document.getElementById('movieForm');
+            var formData = new FormData(form);
+            var formObject = {};
+            formData.forEach(function(value, key){
+                formObject[key] = value;
+            });
+            if (!formObject.isRandom) {
+                formObject.isRandom = 0
+            }
+            var jsonData = JSON.stringify(formObject);
+            
+            fetch('/update_movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: jsonData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Handle success response
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+        });
+    </script>
+</body>
+</html>

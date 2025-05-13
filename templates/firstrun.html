@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
+	<link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
+    <title>Available Movies</title>
+</head>
+<body>
+    It looks like this is your first time running this. To get started, please select a video file from the list below:
+    <form action="/add_movie" method="post">
+        <select name="video_path">
+            {% for movie in movies %}
+                <option value="{{ movie }}">{{ movie }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Select">
+</body>
+</html>
