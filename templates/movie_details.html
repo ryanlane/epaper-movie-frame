@@ -7,8 +7,8 @@
 </head>
 <body>
     <h1>Settings for {{ movie.video_path }}</h1>
-    <form action="/update_movie" method="post">
-        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+    <form id="movieForm">
+        <input type="hidden" name="id" value="{{ movie.id }}">
         <label for="time_per_frame">Select update interval:</label>
         <select name="time_per_frame" id="time_per_frame">
             <option value="10" {% if movie.time_per_frame == 10 %} selected {% endif %}>Every 10 minutes</option>
@@ -29,18 +29,20 @@
         <br>
         <div id="skip_frames">
             <label for="skip_frames">number of frames to skip per update:</label>
-            <input type="number" name="skip_frames" id="skip_frames" min="1" value="1">
+            <input type="number" name="skip_frames" id="skip_frames" min="1" value="{{ movie.skip_frames}}">
         </div>
         <div id="current_frame">
             <label for="current_frame">Current active frame (this is also the starting frame for first runs): </label>
-            <input type="number" name="current_frame" id="current_frame" min="1" value="1">
+            <input type="number" name="current_frame" id="current_frame" min="1" value="{{ movie.current_frame}}">
         </div>
         <div id="isRandom">
             <label for="isRandom">You love chaos and would prefer to just have a random frame at every interval</label>
             <input type="checkbox" name="isRandom" id="isRandom" value="True" {% if movie.isRandom %} checked {% endif %}>
         </div>
-        <input type="submit" value="Submit">
+        <button id="submitButton">Submit</button>
     </form>
+    {% set stringID = movie.id | string() %}
+    <img src="{{ url_for('static', path='' + stringID + '/frame.jpg') }}" />
 
     <script>
         document.getElementById("time_per_frame").addEventListener("change", function() {
@@ -50,6 +52,39 @@
             } else {
                 customTime.style.display = "none";
             }
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            var form = document.getElementById('movieForm');
+            var formData = new FormData(form);
+            var formObject = {};
+            formData.forEach(function(value, key){
+                formObject[key] = value;
+            });
+            if (!formObject.isRandom) {
+                formObject.isRandom = 0
+            }
+            var jsonData = JSON.stringify(formObject);
+            
+            fetch('/update_movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: jsonData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Handle success response
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
         });
     </script>
 </body>

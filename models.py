@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from database import Base
+from pydantic import BaseModel
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -15,6 +16,14 @@ class Movie(Base):
     started_at = Column(DateTime)
     last_updated = Column(DateTime)
 
+class movieSetting(BaseModel):
+    id: int
+    time_per_frame: int
+    custom_time: int
+    skip_frames: int
+    current_frame: int
+    isRandom: bool
+    
 class Settings(Base):
     __tablename__ = "settings"
     
