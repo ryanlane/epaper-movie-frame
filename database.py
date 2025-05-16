@@ -47,7 +47,9 @@ def get_settings():
 def insert_default_settings():
     config_data = config.read_toml_file("config.toml")
     video_root = config_data.get("VIDEO_DIRECTORY", "videos")
-    resolution = config_data.get("RESOLUTION", "800,480")
+    width = config_data.get("TARGET_WIDTH", 800)
+    height = config_data.get("TARGET_HEIGHT", 480)
+    resolution = f"{width},{height}"
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -68,7 +70,9 @@ def update_video_root_path():
 def check_config_against_settings():
     config_data = config.read_toml_file("config.toml")
     config_path = config_data.get("VIDEO_DIRECTORY")
-    config_res = config_data.get("RESOLUTION")
+    width = config_data.get("TARGET_WIDTH")
+    height = config_data.get("TARGET_HEIGHT")
+    config_res = f"{width},{height}"
 
     settings = get_settings()
     db_path = settings['VideoRootPath']
@@ -91,6 +95,7 @@ def check_config_against_settings():
             print("[CONFIG UPDATED] Database settings updated to match config.toml.\n")
         else:
             print("[CONFIG SKIPPED] Database settings were not changed.\n")
+
 
 def get_all_movies():
     conn = get_db_connection()
