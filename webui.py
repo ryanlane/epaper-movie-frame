@@ -2,8 +2,11 @@ import os
 import logging
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from logging.handlers import RotatingFileHandler
-from utils import video_utils, eframe_inky
+from utils import video_utils, eframe_inky, config
 import database
+
+config_data = config.read_toml_file("config.toml")
+VIDEO_DIRECTORY = config_data.get("VIDEO_DIRECTORY", "videos")
 
 # app = Flask(__name__, static_folder='static', template_folder='templates')
 app = Flask(__name__)
@@ -21,7 +24,7 @@ def home():
 
 @app.route('/first_run')
 def first_run():
-    available_movies = video_utils.list_video_files("videos/")
+    available_movies = video_utils.list_video_files(VIDEO_DIRECTORY)
     return render_template("firstrun.html", movies=available_movies)
 
 @app.route('/movie/<int:movie_id>')
