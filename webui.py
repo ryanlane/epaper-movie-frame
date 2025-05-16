@@ -9,8 +9,7 @@ import database
 app = Flask(__name__)
 
 
-@app.before_first_request
-def setup():
+with app.app_context():
     database.init_db()
     if not database.get_settings():
         database.insert_default_settings()
