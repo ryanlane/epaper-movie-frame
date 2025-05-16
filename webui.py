@@ -5,7 +5,9 @@ from logging.handlers import RotatingFileHandler
 from utils import video_utils, eframe_inky
 import database
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+# app = Flask(__name__, static_folder='static', template_folder='templates')
+app = Flask(__name__)
+
 
 @app.before_first_request
 def setup():
