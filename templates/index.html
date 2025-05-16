@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Frame Controls</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     <h1>Movie Frame Controls</h1>
-    <ul>
-        {% for movie in movies %}
-        <li><a href="movie/{{ movie.id }}">{{ movie.video_path }}</a></li>
-    {% endfor %}
-    </ul>
+
+    {% if movies %}
+        <ul>
+            {% for movie in movies %}
+                <li><a href="{{ url_for('movie', movie_id=movie.id) }}">{{ movie.video_path }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No movies found. Add one from the <a href="{{ url_for('first_run') }}">first run</a> page.</p>
+    {% endif %}
 </body>
 </html>
