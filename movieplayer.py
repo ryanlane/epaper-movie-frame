@@ -4,6 +4,7 @@ import threading
 import time
 import logging
 import argparse
+import threading
 from utils import video_utils, eframe_inky, config
 import webui
 
@@ -21,7 +22,7 @@ def keyboard_control(video_settings,logger):
             video_utils.play_video(video_settings,logger)
 
 def run_webui():
-    webui.app   
+    threading.Thread(target=lambda: webui.app.run(host="0.0.0.0", port=8000), daemon=True).start()
 
 def main():
     print("starting up")
