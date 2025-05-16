@@ -1,148 +1,73 @@
 import os
-import uvicorn
 import logging
-from fastapi import FastAPI, Depends, Request, Form, status, HTTPException
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from logging.handlers import RotatingFileHandler
-
-from starlette.responses import RedirectResponse, JSONResponse
-from starlette.templating import Jinja2Templates
-from starlette.staticfiles import StaticFiles
-
-from sqlalchemy.orm import Session
-import models
-from database import SessionLocal, engine
-
 from utils import video_utils, eframe_inky
+import database
 
-logger = logging.getLogger(__name__)
-handler = RotatingFileHandler('webui.log', maxBytes=10000, backupCount=1)
-handler.setLevel(logging.DEBUG)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-models.Base.metadata.create_all(bind=engine)
+@app.before_first_request
+def setup():
+    database.init_db()
+    if not database.get_settings():
+        database.insert_default_settings()
 
-templates = Jinja2Templates(directory="templates")
+@app.route('/')
+def home():
+    movies = database.get_all_movies()
+    return render_template("index.html", movies=movies)
 
-app = FastAPI()
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-app.mount("/static", StaticFiles(directory="static"), name="static")      
-
-@app.on_event("startup")
-async def startup_event():
-   logger.info("Starting up webui")
-   db = SessionLocal()
-   settings = db.query(models.Settings).first()
-
-   if not settings:
-       settings = models.Settings(VideoRootPath="videos", Resolution="800,480")
-       db.add(settings)
-       db.commit()
-
-
-
-# Define a route for the home page
-@app.get('/')
-def home(request: Request, db: Session = Depends(get_db)):
-    movies = db.query(models.Movie).all()
-    return templates.TemplateResponse("index.html", {"request": request, "movies": movies})
-
-@app.get('/first_run')
-def first_run(request: Request, db: Session = Depends(get_db)):
-    # movies = db.query(models.Movie).all()
+@app.route('/first_run')
+def first_run():
     available_movies = video_utils.list_video_files("videos/")
-    return templates.TemplateResponse("firstrun.html", {"request": request, "movies": available_movies})
+    return render_template("firstrun.html", movies=available_movies)
 
-@app.get('/movie/{movie_id}')
-def movie(request: Request, movie_id: int, db: Session = Depends(get_db)):
-    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+@app.route('/movie/<int:movie_id>')
+def movie(movie_id):
+    movie = database.get_movie_by_id(movie_id)
+    frame_path = os.path.join(f"static/{movie_id}", "frame.jpg")
+    current_image_path = os.path.abspath(frame_path) if os.path.exists(frame_path) else None
+    return render_template("movie_details.html", movie=movie, current_image_path=current_image_path)
 
-    # Check if frame.jpg exists in the static folder for the movie_id
-    static_folder = f"static/{movie_id}"
-    frame_path = os.path.join(static_folder, "frame.jpg")
-    if os.path.exists(frame_path):
-        current_image_path = os.path.abspath(frame_path)
-    else:
-        current_image_path = None
+@app.route('/add_movie', methods=['POST'])
+def add_movie():
+    video_path = request.form['video_path']
+    existing = database.get_movie_by_path(video_path)
+    settings = database.get_settings()
 
-    return templates.TemplateResponse("movie_details.html", {"request": request, "movie": movie, "current_image_path": current_image_path})
+    if existing:
+        return redirect(url_for('movie', movie_id=existing['id']))
 
-# Move the decorator above the function declaration
-@app.post('/add_movie')
-def add_movie(request: Request, db: Session = Depends(get_db), video_path: str = Form(...)):
-    movie = models.Movie(video_path=video_path)
-    existingMovie = db.query(models.Movie).filter(models.Movie.video_path == video_path).first()
+    total_frames = video_utils.get_total_frames(video_path)
+    movie = database.insert_movie(video_path, total_frames)
+    video_utils.process_video(movie, settings)
 
-    settings = db.query(models.Settings).first()
-    
-    # if existingMovie exists then redirect to update_movie
+    return redirect(url_for('home'))
 
-    if existingMovie:
-        url = app.url_path_for('movie', movie_id=existingMovie.id)
-        return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
-    else: 
-        movie.total_frames = video_utils.get_total_frames(video_path)
-        movie.time_per_frame = 60
-        movie.skip_frames = 1
-        movie.current_frame = 1
-        movie.isActive = False
+@app.route('/update_movie', methods=['POST'])
+def update_movie():
+    payload = request.get_json()
+    if int(payload['time_per_frame']) == 0:
+        payload['time_per_frame'] = int(payload.get('custom_time', 60))
 
-        
-        db.add(movie)
-        db.commit()
-        db.refresh(movie)
+    updated_movie = database.update_movie(payload)
+    settings = database.get_settings()
+    video_utils.process_video(updated_movie, settings)
 
-        video_utils.process_video(movie,settings)  
+    return jsonify({"message": "Movie updated successfully"})
 
-        url = app.url_path_for('home')
-        return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
-
-
-@app.post('/update_movie')
-def update_movie(
-    payload: models.movieSetting,
-    db: Session = Depends(get_db)
-):
-
-    movie = db.query(models.Movie).filter(models.Movie.id == payload.id).first()
-
-    if not movie:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "invalid id", "message": "Movie not found"})
-    
-    settings = db.query(models.Settings).first()
-    
-    # movie.isActive = not movie.isActive
-    if payload.time_per_frame == 0:
-        payload.time_per_frame = payload.custom_time
-    movie.time_per_frame = payload.time_per_frame
-    movie.skip_frames = payload.skip_frames
-    movie.current_frame = payload.current_frame
-    movie.isRandom = payload.isRandom 
-
-    #update database record
-    db.add(movie)
-    db.commit()
-
-    video_utils.process_video(movie,settings)  
-
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": f"{payload.id} Movie item updated successfully"})
-
-
-@app.post('/delete_movie/{movie_id}')
-def delete_movie(request: Request, movie_id: int, db: Session = Depends(get_db)):
-    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+@app.route('/delete_movie/<int:movie_id>', methods=['POST'])
+def delete_movie(movie_id):
+    movie = database.delete_movie(movie_id)
     if movie:
-        db.delete(movie)
-        db.commit()
-
-        return JSONResponse(status_code=status.HTTP_302_FOUND, content={"message": "Movie item deleted successfully"})
-    else:        
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "invalid id", "message": "Movie not found"})
+        return jsonify({"message": "Movie item deleted successfully"}), 302
+    else:
+        return jsonify({"error": "Movie not found"}), 404
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    handler = RotatingFileHandler('webui.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(handler)
+
+    app.run(host="0.0.0.0", port=8000, debug=True)
