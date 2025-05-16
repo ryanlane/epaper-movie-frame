@@ -65,6 +65,33 @@ def update_video_root_path():
         conn.commit()
         conn.close()
 
+def check_config_against_settings():
+    config_data = config.read_toml_file("config.toml")
+    config_path = config_data.get("VIDEO_DIRECTORY")
+    config_res = config_data.get("RESOLUTION")
+
+    settings = get_settings()
+    db_path = settings['VideoRootPath']
+    db_res = settings['Resolution']
+
+    if config_path != db_path or config_res != db_res:
+        print("\n[CONFIG CHECK] Your config.toml values differ from what's stored in the database:")
+        if config_path != db_path:
+            print(f" - VIDEO_DIRECTORY: database = '{db_path}', config = '{config_path}'")
+        if config_res != db_res:
+            print(f" - RESOLUTION: database = '{db_res}', config = '{config_res}'")
+
+        choice = input("\nWould you like to update the database settings to match config.toml? (y/n): ").strip().lower()
+        if choice == 'y':
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("UPDATE Settings SET VideoRootPath = ?, Resolution = ? WHERE id = 1", (config_path, config_res))
+            conn.commit()
+            conn.close()
+            print("[CONFIG UPDATED] Database settings updated to match config.toml.\n")
+        else:
+            print("[CONFIG SKIPPED] Database settings were not changed.\n")
+
 def get_all_movies():
     conn = get_db_connection()
     movies = conn.execute('SELECT * FROM Movie').fetchall()

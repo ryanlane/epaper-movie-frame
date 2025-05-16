@@ -2,6 +2,7 @@ import threading
 import time
 import logging
 import argparse
+import database
 
 import webui
 from utils import video_utils, eframe_inky, config
@@ -11,6 +12,14 @@ def setup_logger(log_level):
                         format="%(asctime)s [%(levelname)s] %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S")
     return logging.getLogger(__name__)
+
+def init_database():
+    database.init_db()
+    if not database.get_settings():
+        database.insert_default_settings()
+    else:
+        database.check_config_against_settings()
+
 
 def run_webui():
     # Launch Flask server in a background thread
@@ -47,5 +56,6 @@ def main():
             time.sleep(video_settings.time_per_frame / 1000)
 
 if __name__ == "__main__":
+    init_database()  # Initialize the database
     run_webui()  # Start Flask
     main()       # Start movie playback
