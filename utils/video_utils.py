@@ -264,8 +264,8 @@ def resize_with_black_borders(image, target_width, target_height):
 
 # Function to process a video, extract a specific frame, resize it, and save as an image
 def process_video(movie, settings):
-    captured_video = cv2.VideoCapture(f"{settings.VideoRootPath}/{movie.video_path}")
-    resolution_string = settings.Resolution.split(',')
+    captured_video = cv2.VideoCapture(f"{settings['VideoRootPath']}/{movie['video_path']}")
+    resolution_string = settings['Resolution'].split(',')
     resolution = [int(x) for x in resolution_string]
     
     # Extract the specified frame from the video
