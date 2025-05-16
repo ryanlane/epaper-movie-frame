@@ -45,7 +45,8 @@
         <button id="submitButton">Submit</button>
     </form>
 
-    <img src="{{ url_for('static', filename=str(movie['id']) + '/frame.jpg') }}" />
+    <img src="{{ url_for('static', filename=movie['id'] ~ '/frame.jpg') }}" />
+
 
     <script>
         document.getElementById("time_per_frame").addEventListener("change", function () {
