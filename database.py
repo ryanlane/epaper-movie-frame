@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from utils import config
 
 DB_PATH = "database.sqlite"
 
@@ -44,11 +45,25 @@ def get_settings():
     return settings
 
 def insert_default_settings():
+    config_data = config.read_toml_file("config.toml")
+    video_root = config_data.get("VIDEO_DIRECTORY", "videos")
+    resolution = config_data.get("RESOLUTION", "800,480")
+
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO Settings (VideoRootPath, Resolution) VALUES (?, ?)", ("videos", "800,480"))
+    cur.execute("INSERT INTO Settings (VideoRootPath, Resolution) VALUES (?, ?)", (video_root, resolution))
     conn.commit()
     conn.close()
+
+def update_video_root_path():
+    config_data = config.read_toml_file("config.toml")
+    new_path = config_data.get("VIDEO_DIRECTORY")
+    if new_path:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE Settings SET VideoRootPath = ? WHERE id = 1", (new_path,))
+        conn.commit()
+        conn.close()
 
 def get_all_movies():
     conn = get_db_connection()
