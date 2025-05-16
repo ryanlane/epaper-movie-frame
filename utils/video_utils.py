@@ -225,7 +225,7 @@ def render_playback_time(video_settings):
 
 # Function to save a frame as an image with specified quality
 def save_frame_as_image(frame, movie):
-    directory = f"static/{movie.id}"
+    directory = f"static/{movie['id']}"
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -264,12 +264,14 @@ def resize_with_black_borders(image, target_width, target_height):
 
 # Function to process a video, extract a specific frame, resize it, and save as an image
 def process_video(movie, settings):
-    captured_video = cv2.VideoCapture(f"{settings['VideoRootPath']}/{movie['video_path']}")
+    video_path = f"{settings['VideoRootPath']}/{movie['video_path']}"
+    captured_video = cv2.VideoCapture(video_path)
+
     resolution_string = settings['Resolution'].split(',')
     resolution = [int(x) for x in resolution_string]
     
     # Extract the specified frame from the video
-    movie_frame = extract_frame_as_image(captured_video, movie.current_frame)
+    movie_frame = extract_frame_as_image(captured_video, movie['current_frame'])
     # progress_animation(30)
     # Resize the frame with black borders to the target dimensions    
     final_size_frame = resize_with_black_borders(movie_frame, resolution[0], resolution[1])
