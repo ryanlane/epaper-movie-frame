@@ -4,7 +4,7 @@ import os
 import sys
 import json
 from utils import eframe_inky
-import models
+# import models
 
 from datetime import datetime, timedelta
 
