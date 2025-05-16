@@ -5,7 +5,7 @@ import time
 import logging
 import argparse
 from utils import video_utils, eframe_inky, config
-from web import webui
+import webui
 
 
 def setup_logger(log_level):
