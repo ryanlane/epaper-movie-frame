@@ -61,6 +61,18 @@ def update_movie():
 
     return jsonify({"message": "Movie updated successfully"})
 
+@app.post('/start_playback/<int:movie_id>')
+def start_playback(movie_id):
+    database.set_active_movie(movie_id)
+    return redirect(url_for('home'))
+
+
+@app.post('/stop_playback')
+def stop_playback():
+    database.clear_active_movie()
+    return redirect(url_for('home'))
+
+
 @app.route('/delete_movie/<int:movie_id>', methods=['POST'])
 def delete_movie(movie_id):
     movie = database.delete_movie(movie_id)

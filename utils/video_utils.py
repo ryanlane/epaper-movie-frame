@@ -7,6 +7,7 @@ from utils import eframe_inky
 # import models
 
 from datetime import datetime, timedelta
+from database import get_settings, get_active_movie
 
 MOVIE_DATA = "movie_data.json"
 
@@ -137,6 +138,25 @@ def render_future_date(milliseconds=0):
     
     return current_time_and_date
 
+def load_active_video_settings():
+    settings = get_settings()
+    movie = get_active_movie()
+
+    if not settings or not movie:
+        print("[WARN] No active movie or settings found.")
+        return None
+
+    video_settings = VideoSettings()
+    video_settings.video_path = f"{settings['VideoRootPath']}/{movie['video_path']}"
+    video_settings.output_image = "frame.jpg"  # or use settings if needed
+    video_settings.total_frames = movie['total_frames']
+    video_settings.current_frame = movie['current_frame']
+    video_settings.skip_frames = movie['skip_frames']
+    video_settings.time_per_frame = movie['time_per_frame']
+    video_settings.resolution = [int(x) for x in settings['Resolution'].split(',')]
+    return video_settings, movie, settings
+
+# to be deprecated
 def select_video(video_files, video_settings):
     """
     Prompt the user to select a video from the list.

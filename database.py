@@ -150,6 +150,28 @@ def update_movie(payload):
     conn.close()
     return updated_movie
 
+def get_active_movie():
+    conn = get_db_connection()
+    movie = conn.execute("SELECT * FROM Movie WHERE isActive = 1 LIMIT 1").fetchone()
+    conn.close()
+    return movie
+
+def set_active_movie(movie_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE Movie SET isActive = 0")
+    cur.execute("UPDATE Movie SET isActive = 1 WHERE id = ?", (movie_id,))
+    conn.commit()
+    conn.close()
+
+def clear_active_movie():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE Movie SET isActive = 0")
+    conn.commit()
+    conn.close()
+
+
 def delete_movie(movie_id):
     conn = get_db_connection()
     cur = conn.cursor()
