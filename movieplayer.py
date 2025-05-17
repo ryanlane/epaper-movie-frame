@@ -1,5 +1,6 @@
 import threading
 import time
+import requests
 import logging
 import argparse
 import database
@@ -23,7 +24,26 @@ def init_database():
 
 def run_webui():
     # Launch Flask server in a background thread
-    threading.Thread(target=lambda: webui.app.run(host="0.0.0.0", port=8000), daemon=True).start()
+    # threading.Thread(target=lambda: webui.app.run(host="0.0.0.0", port=8000), daemon=True).start()
+
+    def start_flask():
+        from webui import app
+        app.run(host="0.0.0.0", port=8000, debug=False)
+    
+    thread = threading.Thread(target=start_flask, daemon=True)
+    thread.start()
+
+    # Wait until Flask server responds
+    for _ in range(30):  # wait up to ~15 seconds
+        try:
+            res = requests.get("http://127.0.0.1:8000/")
+            if res.status_code == 200:
+                print("[INFO] Flask server is up.")
+                break
+        except requests.exceptions.ConnectionError:
+            time.sleep(0.5)
+    else:
+        print("[ERROR] Flask server did not start in time.")
 
 def main():
     print("Starting movieplayer")
