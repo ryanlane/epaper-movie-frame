@@ -7,7 +7,7 @@ from utils import eframe_inky
 # import models
 
 from datetime import datetime, timedelta
-from database import get_settings, get_active_movie
+
 
 MOVIE_DATA = "movie_data.json"
 
@@ -139,6 +139,7 @@ def render_future_date(milliseconds=0):
     return current_time_and_date
 
 def load_active_video_settings():
+    from database import get_settings, get_active_movie  # moved here to avoid circular import
     settings = get_settings()
     movie = get_active_movie()
 
