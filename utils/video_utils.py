@@ -403,18 +403,21 @@ def play_video(video_settings, logger):
     # Show the processed frame on the e-ink display
     eframe_inky.show_on_inky(video_settings.output_image)
     
+      
+    # Render playback time
+    render_playback_time(video_settings)
+
     # Calculate the next frame
     next_frame = video_settings.current_frame + video_settings.skip_frames
     if next_frame < video_settings.total_frames:
         video_settings.current_frame = next_frame
     else:
         video_settings.current_frame = 0  # loop or reset
-   
-    # Render playback time
-    render_playback_time(video_settings)
 
-    # Save the updated video settings to maintain state
+     # Save the updated video settings to maintain state
     save_data_state(video_settings)
+
+   
 
 def get_disk_usage_stats(path="/"):
     usage = shutil.disk_usage(path)
