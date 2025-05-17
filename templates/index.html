@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Frame Controls</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block title %}Movie Frame Home{% endblock %}
+{% block content %}
     <h1>Movie Frame Controls</h1>
 
     {% if movies %}
@@ -38,6 +33,4 @@
         </ul>
     </div>
 
-
-</body>
-</html>
+{% endblock %}

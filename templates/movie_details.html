@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings for {{ movie['video_path'] }}</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block title %}Movie Frame Details{% endblock %}
+
+{% block content %}
     <h1>Settings for {{ movie['video_path'] }}</h1>
 
     <form id="movieForm">
@@ -107,5 +103,4 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}
