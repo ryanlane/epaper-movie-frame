@@ -49,12 +49,16 @@ def run_webui():
 def main():
     logger = setup_logger(logging.INFO)
 
+    wait_counter = 0
     while True:
         result = video_utils.load_active_video_settings()
         if not result:
-            print("[INFO] No active movie. Waiting...")
+            if wait_counter % 12 == 0:
+                print("[INFO] No active movie. Waiting...")
+            wait_counter += 1
             time.sleep(5)
             continue
+        wait_counter = 0
 
         video_settings, movie, settings = result
         video_utils.play_video(video_settings, logger)
