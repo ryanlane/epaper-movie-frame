@@ -47,7 +47,7 @@ def run_webui():
 
 
 def main():
-    logger = setup_logger(...)
+    logger = setup_logger(logging.INFO)
     result = video_utils.load_active_video_settings()
 
     if not result:
