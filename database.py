@@ -136,19 +136,22 @@ def update_movie(payload):
             time_per_frame = ?,
             skip_frames = ?,
             current_frame = ?,
-            isRandom = ?
+            isRandom = ?,
+            total_frames = ?
         WHERE id = ?
     ''', (
         int(payload['time_per_frame']),
         int(payload['skip_frames']),
         int(payload['current_frame']),
         int(payload.get('isRandom', 0)),
+        int(payload['total_frames']),
         int(payload['id'])
     ))
     conn.commit()
     updated_movie = conn.execute('SELECT * FROM Movie WHERE id = ?', (payload['id'],)).fetchone()
     conn.close()
     return updated_movie
+
 
 def get_active_movie():
     conn = get_db_connection()

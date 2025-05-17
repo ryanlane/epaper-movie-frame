@@ -60,14 +60,24 @@ def add_movie():
 @app.route('/update_movie', methods=['POST'])
 def update_movie():
     payload = request.get_json()
-    if int(payload['time_per_frame']) == 0:
-        payload['time_per_frame'] = int(payload.get('custom_time', 60))
-
-    updated_movie = database.update_movie(payload)
+    db_movie = database.get_movie_by_id(payload['id'])
     settings = database.get_settings()
+
+    if not db_movie or not settings:
+        return jsonify({"error": "Invalid ID or missing settings"}), 400
+
+    # Recalculate total frames
+    full_path = os.path.join(settings['VideoRootPath'], db_movie['video_path'])
+    total_frames = video_utils.get_total_frames(full_path)
+
+    # Update movie data including recalculated frames
+    payload['total_frames'] = total_frames
+    updated_movie = database.update_movie(payload)
+
     video_utils.process_video(updated_movie, settings)
 
     return jsonify({"message": "Movie updated successfully"})
+
 
 @app.post('/start_playback/<int:movie_id>')
 def start_playback(movie_id):
