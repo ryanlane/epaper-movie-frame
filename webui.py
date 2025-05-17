@@ -20,7 +20,17 @@ with app.app_context():
 @app.route('/')
 def home():
     movies = database.get_all_movies()
-    return render_template("index.html", movies=movies)
+    settings = database.get_settings()
+
+    disk_stats = video_utils.get_disk_usage_stats("/")
+    video_dir_size = video_utils.get_directory_size_gb(settings['VideoRootPath'])
+
+    return render_template(
+        "index.html",
+        movies=movies,
+        disk_stats=disk_stats,
+        video_dir_size=round(video_dir_size, 2)
+    )
 
 @app.route('/first_run')
 def first_run():
@@ -30,9 +40,18 @@ def first_run():
 @app.route('/movie/<int:movie_id>')
 def movie(movie_id):
     movie = database.get_movie_by_id(movie_id)
+
     frame_path = os.path.join(f"static/{movie_id}", "frame.jpg")
     current_image_path = os.path.abspath(frame_path) if os.path.exists(frame_path) else None
-    return render_template("movie_details.html", movie=movie, current_image_path=current_image_path)
+
+    playback_time = video_utils.calculate_playback_time(movie)
+
+    return render_template(
+        "movie_details.html",
+        movie=movie,
+        current_image_path=current_image_path,
+        playback_time=playback_time
+    )
 
 @app.route('/add_movie', methods=['POST'])
 def add_movie():
@@ -66,17 +85,21 @@ def update_movie():
     if not db_movie or not settings:
         return jsonify({"error": "Invalid ID or missing settings"}), 400
 
-    # Recalculate total frames
+    # Handle "Other" option with custom time
+    if int(payload['time_per_frame']) == 0:
+        payload['time_per_frame'] = int(payload.get('custom_time', 1))  # fallback to 1 minute
+
+    # Recalculate total frames using full video path
     full_path = os.path.join(settings['VideoRootPath'], db_movie['video_path'])
     total_frames = video_utils.get_total_frames(full_path)
-
-    # Update movie data including recalculated frames
     payload['total_frames'] = total_frames
-    updated_movie = database.update_movie(payload)
 
+    # Update database and process frame
+    updated_movie = database.update_movie(payload)
     video_utils.process_video(updated_movie, settings)
 
     return jsonify({"message": "Movie updated successfully"})
+
 
 
 @app.post('/start_playback/<int:movie_id>')

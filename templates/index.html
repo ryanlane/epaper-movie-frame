@@ -28,5 +28,16 @@
         <button type="submit">Stop Playback</button>
     </form>
 
+    <div>
+        <h2>System Info</h2>
+        <ul>
+            <li><strong>Total Disk:</strong> {{ disk_stats.total_gb }} GB</li>
+            <li><strong>Used Disk:</strong> {{ disk_stats.used_gb }} GB</li>
+            <li><strong>Free Disk:</strong> {{ disk_stats.free_gb }} GB</li>
+            <li><strong>Video Directory Size:</strong> {{ video_dir_size }} GB</li>
+        </ul>
+    </div>
+
+
 </body>
 </html>

@@ -48,6 +48,13 @@
 
 
     <img src="{{ url_for('static', filename=movie['id'] ~ '/frame.jpg') }}" />
+    <p><strong>Estimated playback time:</strong>
+        {{ playback_time[0] }} years,
+        {{ playback_time[1] }} days,
+        {{ playback_time[2] }} hours,
+        {{ playback_time[3] }} minutes
+    </p>
+
 
     <form action="{{ url_for('start_playback', movie_id=movie['id']) }}" method="post">
         <button type="submit">Start Playback</button>

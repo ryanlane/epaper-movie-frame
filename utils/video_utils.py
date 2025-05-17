@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import sys
+import shutil
 import json
 from utils import eframe_inky
 # import models
@@ -388,21 +389,34 @@ def play_video(video_settings, logger):
     # Show the processed frame on the e-ink display
     eframe_inky.show_on_inky(video_settings.output_image)
     
-    # Calculate the next frame to be displayed
-    nextframe = video_settings.current_frame + video_settings.skip_frames
-    if nextframe <= video_settings.total_frames:
-        new_frame = nextframe
+    # Calculate the next frame
+    next_frame = video_settings.current_frame + video_settings.skip_frames
+    if next_frame < video_settings.total_frames:
+        video_settings.current_frame = next_frame
     else:
-        # for now we'll start over
-        new_frame = 0
-    
-    # Update the current frame in the VideoSettings instance
-    video_settings.current_frame = new_frame
-    
+        video_settings.current_frame = 0  # loop or reset
+   
     # Render playback time
     render_playback_time(video_settings)
 
     # Save the updated video settings to maintain state
     save_data_state(video_settings)
 
+def get_disk_usage_stats(path="/"):
+    usage = shutil.disk_usage(path)
+    return {
+        "total_gb": usage.total // (1024**3),
+        "used_gb": usage.used // (1024**3),
+        "free_gb": usage.free // (1024**3)
+    }
 
+def get_directory_size_gb(directory):
+    total = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for f in filenames:
+            try:
+                fp = os.path.join(dirpath, f)
+                total += os.path.getsize(fp)
+            except FileNotFoundError:
+                continue
+    return total / (1024**3)
