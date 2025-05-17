@@ -5,7 +5,7 @@ import sys
 import shutil
 import json
 from utils import eframe_inky
-# import models
+import sqlite3
 
 from datetime import datetime, timedelta
 
