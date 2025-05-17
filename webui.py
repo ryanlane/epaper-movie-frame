@@ -40,11 +40,23 @@ def first_run():
 @app.route('/movie/<int:movie_id>')
 def movie(movie_id):
     movie = database.get_movie_by_id(movie_id)
+    settings = database.get_settings()
 
     frame_path = os.path.join(f"static/{movie_id}", "frame.jpg")
     current_image_path = os.path.abspath(frame_path) if os.path.exists(frame_path) else None
 
-    playback_time = video_utils.calculate_playback_time(movie)
+    video_settings = video_utils.VideoSettings(
+        video_path=os.path.join(settings['VideoRootPath'], movie['video_path']),
+        time_per_frame=movie['time_per_frame'],
+        skip_frames=movie['skip_frames'],
+        current_frame=movie['current_frame'],
+        total_frames=movie['total_frames'],
+        resolution=[int(x) for x in settings['Resolution'].split(',')],
+        video_root_path=settings['VideoRootPath'],
+        output_image="frame.jpg"
+    )
+
+    playback_time = video_utils.calculate_playback_time(video_settings)
 
     return render_template(
         "movie_details.html",

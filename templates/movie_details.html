@@ -61,13 +61,13 @@
     </form>
 
 
-    {% for movie in movies %}
-        {% if movie['isActive'] %}
-            <form action="{{ url_for('stop_playback') }}" method="post">
-                <button type="submit">Stop Playback</button>
-            </form>
-        {% endif %}
-    {% endfor %}
+
+    {% if movie['isActive'] %}
+        <form action="{{ url_for('stop_playback') }}" method="post">
+            <button type="submit">Stop Playback</button>
+        </form>
+    {% endif %}
+
 
 
     <script>
