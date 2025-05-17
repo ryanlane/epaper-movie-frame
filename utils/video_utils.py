@@ -304,7 +304,23 @@ def process_video(movie, settings):
     # progress_animation(100)
 
     # print("\n image processing completed \n")
-    
+
+def process_video_from_settings(cap, settings_obj):
+    video_path = settings_obj.video_path
+    captured_video = cap or cv2.VideoCapture(video_path)
+    resolution = settings_obj.resolution
+
+    movie_frame = extract_frame_as_image(captured_video, settings_obj.current_frame)
+    if movie_frame is None:
+        print(f"[ERROR] Could not extract frame from {video_path}")
+        return
+
+    final_size_frame = resize_with_black_borders(movie_frame, resolution[0], resolution[1])
+
+    # Save image to a default location since there's no movie ID
+    output_path = settings_obj.output_image or "frame.jpg"
+    cv2.imwrite(output_path, final_size_frame, [cv2.IMWRITE_JPEG_QUALITY, 90])
+
 
 def progress_animation(percentage):
     sys.stdout.write("\rProcessing Video: [{}{}] {}%".format("#" * percentage, "." * (100 - percentage), percentage))
@@ -354,7 +370,9 @@ def play_video(video_settings, logger):
     captured_video = cv2.VideoCapture(selected_video)
     
     # Process the video to extract, resize, and save the frame
-    process_video(captured_video, video_settings)
+    # process_video(captured_video, video_settings)
+    process_video_from_settings(captured_video, video_settings)
+
     
     # Show the processed frame on the e-ink display
     eframe_inky.show_on_inky(video_settings.output_image)
