@@ -117,18 +117,32 @@ def list_video_files(directory):
             video_files.append(filename)
     return video_files
 
-def calculate_playback_time(video_settings):
-    adjusted_frames = video_settings.total_frames - video_settings.current_frame
-     # Calculate total playback time in milliseconds
-    total_milliseconds = (adjusted_frames / video_settings.skip_frames) * video_settings.time_per_frame
+def calculate_playback_time(video_data):
+    # Support both dict (Row) and VideoSettings
+    if isinstance(video_data, dict) or isinstance(video_data, sqlite3.Row):
+        total_frames = video_data['total_frames']
+        current_frame = video_data['current_frame']
+        skip_frames = video_data['skip_frames']
+        time_per_frame_minutes = video_data['time_per_frame']
+    else:
+        total_frames = video_data.total_frames
+        current_frame = video_data.current_frame
+        skip_frames = video_data.skip_frames
+        time_per_frame_minutes = video_data.time_per_frame
 
-    # Convert milliseconds to years, days, hours, and minutes
+    # Convert to milliseconds
+    time_per_frame_ms = time_per_frame_minutes * 60 * 1000
+
+    adjusted_frames = total_frames - current_frame
+    total_milliseconds = (adjusted_frames / skip_frames) * time_per_frame_ms
+
     years, remainder = divmod(total_milliseconds, 31536000000)
     days, remainder = divmod(remainder, 86400000)
     hours, remainder = divmod(remainder, 3600000)
-    minutes, seconds = divmod(remainder, 60000)
+    minutes, _ = divmod(remainder, 60000)
 
     return int(years), int(days), int(hours), int(minutes)
+
 
 def render_future_date(milliseconds=0):
     current_time = datetime.now()

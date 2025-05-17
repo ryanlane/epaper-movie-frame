@@ -56,15 +56,13 @@
     </p>
 
 
-    <form action="{{ url_for('start_playback', movie_id=movie['id']) }}" method="post">
-        <button type="submit">Start Playback</button>
-    </form>
-
-
-
     {% if movie['isActive'] %}
         <form action="{{ url_for('stop_playback') }}" method="post">
             <button type="submit">Stop Playback</button>
+        </form>
+    {% else %}
+        <form action="{{ url_for('start_playback', movie_id=movie['id']) }}" method="post">
+            <button type="submit">Start Playback</button>
         </form>
     {% endif %}
 
