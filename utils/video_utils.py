@@ -225,9 +225,14 @@ def get_frames_to_skip():
 
 # Function to get the total number of frames in a video
 def get_total_frames(video_path):
-    captured_video = cv2.VideoCapture(f"videos/{video_path}")
+    captured_video = cv2.VideoCapture(video_path)
+    if not captured_video.isOpened():
+        print(f"[ERROR] Failed to open video file: {video_path}")
+        return 0
     total_frames = int(captured_video.get(cv2.CAP_PROP_FRAME_COUNT))
+    captured_video.release()
     return total_frames
+
 
 # Function to extract a specific frame as an image
 def extract_frame_as_image(cap, frame_number):
@@ -335,8 +340,14 @@ def playback_init(video_settings, logger):
         available_video_files = list_video_files(video_settings.video_root_path)
         video_settings.video_path = select_video(available_video_files,video_settings)
 
-        captured_video = cv2.VideoCapture(video_settings.video_path)
-        video_settings.total_frames = get_total_frames(captured_video)
+        # captured_video = cv2.VideoCapture(video_settings.video_path)
+
+        # Combine root + filename to build full path
+        full_path = os.path.join(video_settings.video_root_path, video_settings.video_path)
+        video_settings.total_frames = get_total_frames(full_path)
+
+        if video_settings.total_frames == 0:
+            logger.warning(f"Total frames is 0 for: {full_path}")
 
         video_settings.time_per_frame = get_update_interval()
         logger.info(f"Selected update interval: {video_settings.time_per_frame} milliseconds")
@@ -349,7 +360,7 @@ def playback_init(video_settings, logger):
 
         save_data_state(video_settings)
 
-        captured_video.release()
+
 
 def play_video(video_settings, logger):
     # Log the path of the selected video

@@ -36,15 +36,23 @@ def movie(movie_id):
 
 @app.route('/add_movie', methods=['POST'])
 def add_movie():
-    video_path = request.form['video_path']
+    video_path = request.form['video_path']  # just the filename
     existing = database.get_movie_by_path(video_path)
     settings = database.get_settings()
 
     if existing:
         return redirect(url_for('movie', movie_id=existing['id']))
 
-    total_frames = video_utils.get_total_frames(video_path)
+    # Construct full path for OpenCV
+    full_path = os.path.join(settings['VideoRootPath'], video_path)
+
+    # Get total frames from full path
+    total_frames = video_utils.get_total_frames(full_path)
+
+    # Insert movie using just the filename
     movie = database.insert_movie(video_path, total_frames)
+
+    # Process first frame using movie + settings
     video_utils.process_video(movie, settings)
 
     return redirect(url_for('home'))
