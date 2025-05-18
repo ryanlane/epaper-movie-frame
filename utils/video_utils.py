@@ -265,8 +265,8 @@ def render_playback_time(video_settings):
     print(f"next frame will be displayed: {future_frame}")
 
 # Function to save a frame as an image with specified quality
-def save_frame_as_image(frame, movie):
-    directory = f"static/{movie['id']}"
+def save_frame_as_image(frame, movie_id):
+    directory = f"static/{movie_id}"
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -319,7 +319,7 @@ def process_video(movie, settings):
     final_size_frame = resize_with_black_borders(movie_frame, resolution[0], resolution[1])
     # progress_animation(60)
     # Save the resized frame as an image
-    save_frame_as_image(final_size_frame, movie)
+    save_frame_as_image(final_size_frame, movie['id'])
     
     # progress_animation(100)
 
