@@ -41,6 +41,14 @@ def init_db():
             WHERE isActive = 1
         ''')
 
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS NowPlaying (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                movie_id INTEGER NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
 
         conn.commit()
         conn.close()
@@ -73,6 +81,13 @@ def update_video_root_path():
         cur.execute("UPDATE Settings SET VideoRootPath = ? WHERE id = 1", (new_path,))
         conn.commit()
         conn.close()
+
+def update_current_frame(movie_id, current_frame):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE Movie SET current_frame = ? WHERE id = ?", (current_frame, movie_id))
+    conn.commit()
+    conn.close()
 
 def check_config_against_settings():
     config_data = config.read_toml_file("config.toml")
@@ -165,6 +180,21 @@ def get_active_movie():
     movie = conn.execute("SELECT * FROM Movie WHERE isActive = 1 LIMIT 1").fetchone()
     conn.close()
     return movie
+
+def set_now_playing(movie_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM NowPlaying")  # always just one
+    cur.execute("INSERT INTO NowPlaying (movie_id) VALUES (?)", (movie_id,))
+    conn.commit()
+    conn.close()
+
+def get_now_playing():
+    conn = get_db_connection()
+    result = conn.execute("SELECT movie_id FROM NowPlaying LIMIT 1").fetchone()
+    conn.close()
+    return result['movie_id'] if result else None
+
 
 def set_active_movie(movie_id):
     conn = get_db_connection()

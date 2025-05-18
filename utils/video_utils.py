@@ -379,7 +379,7 @@ def playback_init(video_settings, logger):
 
 
 
-def play_video(video_settings, logger):
+def play_video(video_settings, logger, movie_id=None):
     # Log the path of the selected video
     logger.info(video_settings.video_path)
     
@@ -418,6 +418,13 @@ def play_video(video_settings, logger):
 
      # Save the updated video settings to maintain state
     save_data_state(video_settings)
+
+    from database import update_current_frame, get_active_movie
+
+    activeMovie = get_active_movie()
+    movie_id = activeMovie['id'] if activeMovie else None
+
+    update_current_frame(video_settings.current_frame, movie_id)
 
    
 
