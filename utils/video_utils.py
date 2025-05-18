@@ -325,7 +325,7 @@ def process_video(movie, settings):
 
     # print("\n image processing completed \n")
 
-def process_video_from_settings(cap, settings_obj):
+def process_video_from_settings(cap, settings_obj, movie_id=None):
     video_path = settings_obj.video_path
     captured_video = cap or cv2.VideoCapture(video_path)
     resolution = settings_obj.resolution
@@ -336,6 +336,8 @@ def process_video_from_settings(cap, settings_obj):
         return
 
     final_size_frame = resize_with_black_borders(movie_frame, resolution[0], resolution[1])
+
+    save_frame_as_image(final_size_frame, movie_id)
 
     # Save image to a default location since there's no movie ID
     output_path = settings_obj.output_image or "frame.jpg"
