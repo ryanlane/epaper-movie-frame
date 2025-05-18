@@ -94,24 +94,36 @@ def add_movie():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     settings = database.get_settings()
-    
+
     if request.method == 'POST':
         uploaded_file = request.files.get('video')
-        if uploaded_file:
-            filename = secure_filename(uploaded_file.filename)
-            ext = os.path.splitext(filename)[1].lower()
+        if not uploaded_file:
+            return jsonify({"error": "No file uploaded"}), 400
 
-            if ext not in UPLOAD_EXTENSIONS:
-                return jsonify({"error": "Unsupported file type"}), 400
+        filename = secure_filename(uploaded_file.filename)
+        ext = os.path.splitext(filename)[1].lower()
 
-            save_path = os.path.join(settings['VideoRootPath'], filename)
-            uploaded_file.save(save_path)
+        if ext not in {'.mp4', '.avi', '.mov', '.mkv'}:
+            return jsonify({"error": "Unsupported file type"}), 400
 
-            return jsonify({"message": "Upload complete"}), 200
+        save_path = os.path.join(settings['VideoRootPath'], filename)
+        uploaded_file.save(save_path)
 
-        return jsonify({"error": "No file uploaded"}), 400
+        # Check if already exists
+        existing = database.get_movie_by_path(filename)
+        if existing:
+            return redirect(url_for('movie', movie_id=existing['id']))
+
+        # Process and insert new movie
+        total_frames = video_utils.get_total_frames(save_path)
+        movie = database.insert_movie(filename, total_frames)
+        video_utils.process_video(movie, settings)
+
+        return redirect(url_for('movie', movie_id=movie['id']))
 
     return render_template('upload.html')
+
+
 
 @app.route('/update_movie', methods=['POST'])
 def update_movie():
