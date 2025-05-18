@@ -3,10 +3,13 @@ import logging
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from logging.handlers import RotatingFileHandler
 from utils import video_utils, eframe_inky, config
+from werkzeug.utils import secure_filename
 import database
 
 config_data = config.read_toml_file("config.toml")
 VIDEO_DIRECTORY = config_data.get("VIDEO_DIRECTORY", "videos")
+
+UPLOAD_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv'}
 
 # app = Flask(__name__, static_folder='static', template_folder='templates')
 app = Flask(__name__)
@@ -87,6 +90,28 @@ def add_movie():
     video_utils.process_video(movie, settings)
 
     return redirect(url_for('home'))
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    settings = database.get_settings()
+    
+    if request.method == 'POST':
+        uploaded_file = request.files.get('video')
+        if uploaded_file:
+            filename = secure_filename(uploaded_file.filename)
+            ext = os.path.splitext(filename)[1].lower()
+
+            if ext not in UPLOAD_EXTENSIONS:
+                return jsonify({"error": "Unsupported file type"}), 400
+
+            save_path = os.path.join(settings['VideoRootPath'], filename)
+            uploaded_file.save(save_path)
+
+            return jsonify({"message": "Upload complete"}), 200
+
+        return jsonify({"error": "No file uploaded"}), 400
+
+    return render_template('upload.html')
 
 @app.route('/update_movie', methods=['POST'])
 def update_movie():

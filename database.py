@@ -35,6 +35,13 @@ def init_db():
             )
         ''')
 
+        cur.execute('''
+            CREATE UNIQUE INDEX IF NOT EXISTS unique_active_movie
+            ON Movie (isActive)
+            WHERE isActive = 1
+        ''')
+
+
         conn.commit()
         conn.close()
 

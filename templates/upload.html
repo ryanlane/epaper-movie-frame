@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}Upload Movie{% endblock %}
+{% block content %}
+<h2>Upload a Movie</h2>
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="video" accept="video/*" required>
+    <button type="submit">Upload</button>
+</form>
+<progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
+<p id="status"></p>
+
+<script>
+document.getElementById("uploadForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const fileInput = document.querySelector('input[name="video"]');
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("video", file);
+
+    const xhr = new XMLHttpRequest();
+    const progressBar = document.getElementById("progressBar");
+    const statusText = document.getElementById("status");
+
+    progressBar.style.display = "block";
+    progressBar.value = 0;
+
+    xhr.upload.addEventListener("progress", function(e) {
+        if (e.lengthComputable) {
+            const percent = (e.loaded / e.total) * 100;
+            progressBar.value = percent;
+        }
+    });
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            statusText.textContent = "Upload complete!";
+        } else {
+            statusText.textContent = "Upload failed. Retrying...";
+            setTimeout(() => {
+                document.getElementById("uploadForm").dispatchEvent(new Event("submit"));
+            }, 3000);
+        }
+    };
+
+    xhr.onerror = function() {
+        statusText.textContent = "Upload error. Retrying...";
+        setTimeout(() => {
+            document.getElementById("uploadForm").dispatchEvent(new Event("submit"));
+        }, 3000);
+    };
+
+    xhr.open("POST", "{{ url_for('upload') }}");
+    xhr.send(formData);
+});
+</script>
+{% endblock %}
