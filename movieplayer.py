@@ -49,15 +49,18 @@ def run_webui():
 
 
 def main():
+    from database import get_active_movie, set_now_playing
+
     logger = setup_logger(logging.INFO)
     wait_counter = 0
 
-    while True:
-        from database import get_active_movie, set_now_playing
-
-        movie = get_active_movie()
-        eframe_inky.show_startup_status(movie)
+    movie = get_active_movie()
+    eframe_inky.show_startup_status(movie)
         
+
+    while True:
+        movie = get_active_movie()
+
         if not movie:
             if wait_counter % 12 == 0:
                 print("[INFO] No active movie. Waiting...")
