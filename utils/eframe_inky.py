@@ -55,7 +55,7 @@ def get_local_ip():
 
 def show_startup_status(movie=None):
     from .eframe_inky import show_on_inky  # Use relative import inside project
-    DEV_MODE = read_toml_file("config.toml").get("DEVELOPMENT_MODE", False)
+    DEV_MODE = config.read_toml_file("config.toml").get("DEVELOPMENT_MODE", False)
 
     WIDTH = 800
     HEIGHT = 480
