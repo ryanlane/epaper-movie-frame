@@ -105,14 +105,16 @@ def upload():
         # Check if already exists
         existing = database.get_movie_by_path(filename)
         if existing:
-            return redirect(url_for('movie', movie_id=existing['id']))
+            return jsonify({"message": "Upload complete!", "movie_id": movie['id']}), 200
+
 
         # Process and insert new movie
         total_frames = video_utils.get_total_frames(save_path)
         movie = database.insert_movie(filename, total_frames)
         video_utils.process_video(movie, settings)
 
-        return redirect(url_for('movie', movie_id=movie['id']))
+        return jsonify({"message": "Upload complete!", "movie_id": movie['id']}), 200
+
 
     return render_template('upload.html')
 

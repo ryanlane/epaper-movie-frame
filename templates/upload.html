@@ -12,7 +12,9 @@
 <script>
 document.getElementById("uploadForm").addEventListener("submit", function(e) {
     e.preventDefault();
+
     const fileInput = document.querySelector('input[name="video"]');
+    const uploadButton = this.querySelector('button[type="submit"]');
     const file = fileInput.files[0];
     const formData = new FormData();
     formData.append("video", file);
@@ -23,6 +25,8 @@ document.getElementById("uploadForm").addEventListener("submit", function(e) {
 
     progressBar.style.display = "block";
     progressBar.value = 0;
+    uploadButton.disabled = true;
+    uploadButton.textContent = "Uploading...";
 
     xhr.upload.addEventListener("progress", function(e) {
         if (e.lengthComputable) {
@@ -32,8 +36,12 @@ document.getElementById("uploadForm").addEventListener("submit", function(e) {
     });
 
     xhr.onload = function() {
+        uploadButton.disabled = false;
+        uploadButton.textContent = "Upload";
         if (xhr.status === 200) {
-            statusText.textContent = "Upload complete!";
+            const response = JSON.parse(xhr.responseText);
+            statusText.textContent = response.message;
+            window.location.href = `/movie/${response.movie_id}`;
         } else {
             statusText.textContent = "Upload failed. Retrying...";
             setTimeout(() => {
@@ -43,6 +51,8 @@ document.getElementById("uploadForm").addEventListener("submit", function(e) {
     };
 
     xhr.onerror = function() {
+        uploadButton.disabled = false;
+        uploadButton.textContent = "Upload";
         statusText.textContent = "Upload error. Retrying...";
         setTimeout(() => {
             document.getElementById("uploadForm").dispatchEvent(new Event("submit"));
@@ -53,4 +63,5 @@ document.getElementById("uploadForm").addEventListener("submit", function(e) {
     xhr.send(formData);
 });
 </script>
+
 {% endblock %}
