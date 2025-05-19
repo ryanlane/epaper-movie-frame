@@ -56,6 +56,8 @@ def main():
         from database import get_active_movie, set_now_playing
 
         movie = get_active_movie()
+        eframe_inky.show_startup_status(movie)
+        
         if not movie:
             if wait_counter % 12 == 0:
                 print("[INFO] No active movie. Waiting...")
