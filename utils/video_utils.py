@@ -119,11 +119,13 @@ def play_video(logger):
 
     final_frame = resize_with_black_borders(frame, resolution[0], resolution[1])
     save_frame_as_image(final_frame, movie_id)
+    
+    image_path = os.path.join(f"static/{movie_id}", "frame.jpg")
 
     if DEV_MODE:
         print("[DEV_MODE] Frame saved to static only.")
     else:
-        eframe_inky.show_on_inky("frame.jpg")
+        eframe_inky.show_on_inky(image_path)
 
     y, d, h, m = calculate_playback_time(movie)
     logger.info(f"Estimated playback time: {y}y {d}d {h}h {m}m")
