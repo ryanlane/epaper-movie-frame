@@ -3,6 +3,7 @@ import datetime
 import os
 import socket
 import qrcode
+from utils import config
 from dotenv import load_dotenv
 from inky.auto import auto
 
