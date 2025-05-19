@@ -162,4 +162,5 @@ movie_data.json
 playlist.json
 .vscode
 movies.sqlite
+database.sqlite
 config.toml

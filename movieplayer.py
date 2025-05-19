@@ -50,56 +50,29 @@ def run_webui():
 
 def main():
     logger = setup_logger(logging.INFO)
-
     wait_counter = 0
-    video_settings = None
 
     while True:
-        if not video_settings:
-            result = video_utils.load_active_video_settings()
-            if not result:
-                if wait_counter % 12 == 0:
-                    print("[INFO] No active movie. Waiting...")
-                wait_counter += 1
-                time.sleep(5)
-                continue
-            video_settings, movie, settings = result
-            wait_counter = 0
+        from database import get_active_movie, set_now_playing
 
-        video_utils.play_video(video_settings, logger)
-        time.sleep(video_settings.time_per_frame * 60)  # now in minutes
+        movie = get_active_movie()
+        if not movie:
+            if wait_counter % 12 == 0:
+                print("[INFO] No active movie. Waiting...")
+            wait_counter += 1
+            time.sleep(5)
+            continue
 
+        movie_id = movie['id']
+        set_now_playing(movie_id)
+        wait_counter = 0
 
+        from utils import video_utils
+        video_utils.play_video(logger)
 
-# def main():
-#     print("Starting movieplayer")
-#     toml_file_path = 'config.toml'
-#     config_data = config.read_toml_file(toml_file_path)
+        # Sleep based on DB-defined interval (in minutes)
+        time.sleep(movie['time_per_frame'] * 60)
 
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], default='INFO')
-#     parser.add_argument('--auto', action='store_true', help="Run auto mode")
-
-#     args = parser.parse_args()
-#     logger = setup_logger(getattr(logging, args.log_level))
-
-#     video_settings = video_utils.VideoSettings()
-#     video_settings.video_root_path = config_data.get('VIDEO_DIRECTORY')
-#     video_settings.output_image = config_data.get('OUTPUT_IMAGE_PATH')
-#     video_settings.resolution = eframe_inky.get_inky_resolution()
-
-#     logger.info("Starting playback...")
-
-#     if args.auto:
-#         while True:
-#             video_utils.load_data_state(video_settings)
-#             video_utils.play_video(video_settings, logger)
-#             time.sleep(video_settings.time_per_frame / 1000)
-#     else:
-#         video_utils.playback_init(video_settings, logger)
-#         while True:
-#             video_utils.play_video(video_settings, logger)
-#             time.sleep(video_settings.time_per_frame / 1000)
 
 if __name__ == "__main__":
     init_database()  # Initialize the database

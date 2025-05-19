@@ -4,6 +4,11 @@
 {% block content %}
     <h1>Movie Frame Controls</h1>
 
+    {% if dev_mode %}
+        <p style="color: orange;"><strong>Developer Mode:</strong> Frame is not being sent to e-ink display.</p>
+    {% endif %}
+
+
     {% if movies %}
         <ul>
             {% for movie in movies %}

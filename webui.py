@@ -32,7 +32,8 @@ def home():
         "index.html",
         movies=movies,
         disk_stats=disk_stats,
-        video_dir_size=round(video_dir_size, 2)
+        video_dir_size=round(video_dir_size, 2),
+        dev_mode=config_data.get("DEVELOPMENT_MODE", False)
     )
 
 @app.route('/first_run')
@@ -48,18 +49,10 @@ def movie(movie_id):
     frame_path = os.path.join(f"static/{movie_id}", "frame.jpg")
     current_image_path = os.path.abspath(frame_path) if os.path.exists(frame_path) else None
 
-    video_settings = video_utils.VideoSettings(
-        video_path=os.path.join(settings['VideoRootPath'], movie['video_path']),
-        time_per_frame=movie['time_per_frame'],
-        skip_frames=movie['skip_frames'],
-        current_frame=movie['current_frame'],
-        total_frames=movie['total_frames'],
-        resolution=[int(x) for x in settings['Resolution'].split(',')],
-        video_root_path=settings['VideoRootPath'],
-        output_image="frame.jpg"
-    )
-
-    playback_time = video_utils.calculate_playback_time(video_settings)
+    from database import get_movie_by_id, get_settings
+    movie = get_movie_by_id(movie_id)
+    settings = get_settings()
+    playback_time = video_utils.calculate_playback_time(movie)
 
     return render_template(
         "movie_details.html",
