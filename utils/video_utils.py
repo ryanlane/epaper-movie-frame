@@ -49,6 +49,13 @@ def save_frame_as_image(frame, movie_id):
     os.makedirs(directory, exist_ok=True)
     cv2.imwrite(f"{directory}/frame.jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 90])
 
+def list_video_files(directory):
+    video_files = []
+    for filename in os.listdir(directory):
+        if filename.lower().endswith(('.mp4', '.avi', '.mkv', '.mov', '.wmv')):
+            video_files.append(filename)
+    return video_files
+
 # Function to process a video, extract a specific frame, resize it, and save as an image
 def process_video(movie, settings):
     video_path = f"{settings['VideoRootPath']}/{movie['video_path']}"
