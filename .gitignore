@@ -156,6 +156,7 @@ videos/*
 
 #generated frame image
 frame.jpg
+startup_frame.jpg
 
 # generated playback config file
 movie_data.json

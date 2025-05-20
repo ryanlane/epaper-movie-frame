@@ -44,6 +44,13 @@
 
 
     <img src="{{ url_for('static', filename=movie['id'] ~ '/frame.jpg') }}" />
+    <div style="margin-top: 1em;">
+        <label for="frameProgress">Progress:</label>
+        <progress id="frameProgress" max="{{ movie['total_frames'] }}" value="{{ movie['current_frame'] }}"></progress>
+        <div>frame: {{ movie['current_frame'] }} of {{ movie['total_frames'] }}</div>
+    </div>
+
+
     <p><strong>Estimated playback time:</strong>
         {{ playback_time[0] }} years,
         {{ playback_time[1] }} days,

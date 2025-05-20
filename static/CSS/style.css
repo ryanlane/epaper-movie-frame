@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'AncizarSans';
+    src: url('../fonts/AncizarSans-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'AncizarSans', sans-serif;
+    margin: 30px;
+    padding: 0;
+}
+
+nav {
+    background: #f0f0f0;
+    padding: 1em;
+}
+
+nav a {
+    margin-right: 1em;
+    text-decoration: none;
+    font-weight: bold;
+    color: #333;
+}
+
+main {
+    padding: 1em;
+}
+
+#frameProgress {
+    color: #669bbc;  /* the progress color */
+    background: lightgrey; /* the background color */
+    height: 20px;
+    width: 100%;
+    appearance: none;
+}

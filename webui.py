@@ -11,8 +11,8 @@ VIDEO_DIRECTORY = config_data.get("VIDEO_DIRECTORY", "videos")
 
 UPLOAD_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv'}
 
-# app = Flask(__name__, static_folder='static', template_folder='templates')
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
+app.config['UPLOAD_FOLDER'] = VIDEO_DIRECTORY
 
 
 with app.app_context():

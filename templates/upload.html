@@ -2,12 +2,25 @@
 {% block title %}Upload Movie{% endblock %}
 {% block content %}
 <h2>Upload a Movie</h2>
+
+<div>
+    Upload a video file to start the process. The upload may take some time depending on the file size and your internet connection.
+    Once the upload is complete, you will be redirected to the movie details page.
+</div>
+
 <form id="uploadForm" enctype="multipart/form-data">
     <input type="file" name="video" accept="video/*" required>
     <button type="submit">Upload</button>
 </form>
 <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
 <p id="status"></p>
+<p></p>
+<div style="height: 120px;"></div>
+
+<div>
+    If a completed upload doesn't redirect you to the movie details page, please click the link below:<br/>
+    <a href="{{ url_for('first_run') }}">Configure New Video</a>
+</div>
 
 <script>
 document.getElementById("uploadForm").addEventListener("submit", function(e) {

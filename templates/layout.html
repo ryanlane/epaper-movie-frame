@@ -5,27 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Movie Frame{% endblock %}</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <style>
-        nav {
-            background: #f0f0f0;
-            padding: 1em;
-        }
-        nav a {
-            margin-right: 1em;
-            text-decoration: none;
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <nav>
         <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('upload') }}">Upload Movie</a>
-
     </nav>
 
-    <main style="padding: 1em;">
+    <main>
         {% block content %}{% endblock %}
     </main>
 </body>
