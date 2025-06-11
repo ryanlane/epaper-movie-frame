@@ -9,6 +9,9 @@ import database
 config_data = config.read_toml_file("config.toml")
 VIDEO_DIRECTORY = config_data.get("VIDEO_DIRECTORY", "videos")
 
+# Ensure the video directory exists
+os.makedirs(VIDEO_DIRECTORY, exist_ok=True)
+
 UPLOAD_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv'}
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -96,27 +99,27 @@ def upload():
         filename = secure_filename(uploaded_file.filename)
         ext = os.path.splitext(filename)[1].lower()
 
-        if ext not in {'.mp4', '.avi', '.mov', '.mkv'}:
+        if ext not in UPLOAD_EXTENSIONS:
             return jsonify({"error": "Unsupported file type"}), 400
+
+        # Ensure upload directory exists
+        os.makedirs(settings['VideoRootPath'], exist_ok=True)
 
         save_path = os.path.join(settings['VideoRootPath'], filename)
         uploaded_file.save(save_path)
 
-        # Check if already exists
         existing = database.get_movie_by_path(filename)
         if existing:
-            return jsonify({"message": "Upload complete!", "movie_id": movie['id']}), 200
+            return jsonify({"message": "Upload complete!", "movie_id": existing['id']}), 200
 
-
-        # Process and insert new movie
         total_frames = video_utils.get_total_frames(save_path)
         movie = database.insert_movie(filename, total_frames)
         video_utils.process_video(movie, settings)
 
         return jsonify({"message": "Upload complete!", "movie_id": movie['id']}), 200
 
-
     return render_template('upload.html')
+
 
 
 
