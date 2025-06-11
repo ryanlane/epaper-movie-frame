@@ -1,15 +1,25 @@
 #!/bin/bash
 
-VENV_DIR="$HOME/.virtualenvs/movieframe"
+set -e  # Exit on first error
 
-echo "Creating virtual environment at $VENV_DIR..."
-python3 -m venv "$VENV_DIR"
+VENV_PATH="$HOME/.virtualenvs/movieframe"
 
-echo "Activating virtual environment..."
-source "$VENV_DIR/bin/activate"
+# Create virtual environment if not exists
+if [ ! -d "$VENV_PATH" ]; then
+    echo "🐍 Creating virtual environment at $VENV_PATH..."
+    python3 -m venv "$VENV_PATH"
+fi
 
-echo "Installing Python dependencies..."
+# Activate virtualenv
+echo "✅ Activating virtual environment..."
+source "$VENV_PATH/bin/activate"
+
+# Upgrade pip
 pip install --upgrade pip
+
+# Install Python dependencies
+echo "📦 Installing Python dependencies from requirements.txt..."
 pip install -r requirements.txt
 
-echo "All Python dependencies installed."
+echo "✅ Python dependencies installed."
+echo "🚀 Setup complete. You can now run movieplayer.py"
