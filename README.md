@@ -1,3 +1,8 @@
+Here's your updated `README.md` reflecting the new install and launch scripts, structured for clarity and simplicity:
+
+---
+
+````markdown
 # E-Paper Movie Frame
 
 This Python project plays a video back at an extremely slow pace, updating a frame on a color e-paper display (like Pimoroni Inky Impression) at a defined interval. A local web interface allows you to manage and view playback in real-time.
@@ -31,47 +36,59 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 
 ### Software
 
-- Python 3.10+
-- OpenCV (`sudo apt install python3-opencv`)
+- Python 3.10+ recommended (works with 3.11/3.12 with patching)
+- OpenCV
 - NumPy
 - Pillow
-- Inky driver: `pip install inky[rpi,example-depends]`
-- Flask (`pip install flask`)
-- `python-dotenv`
+- `inky[rpi,example-depends]`
+- FastAPI
 - SQLite3 (included with Python)
 
 ---
 
 ## ⚙️ Setup
 
-1. **Clone the repo:**
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/ryanlane/epaper-movie-frame.git
 cd epaper-movie-frame
-```
+````
 
-2. **Install dependencies:**
+### 2. Run system-level setup (one-time only)
+
+This installs required packages like OpenCV, dev headers, and virtualenv support.
 
 ```bash
-chmod +x install_dependencies.sh
-./install_dependencies.sh
+chmod +x system-setup.sh
+./system-setup.sh
 ```
 
-3. **Edit your `config.toml`:**
+### 3. Create virtual environment and install Python dependencies
+
+```bash
+chmod +x project-install.sh
+./project-install.sh
+```
+
+### 4. Create your `config.toml`
+
+If it doesn’t exist, the app will prompt you. Example contents:
 
 ```toml
-VIDEO_DIRECTORY = "/home/pi/videos"
-TARGET_WIDTH = 800
-TARGET_HEIGHT = 480
-OUTPUT_IMAGE_PATH = "frame.jpg"
+VIDEO_DIRECTORY = "videos"
+OUTPUT_IMAGE_PATH = "output/frame.jpg"
 DEVELOPMENT_MODE = false
 ```
 
-4. **Start the application:**
+---
+
+## 🚀 Launch the App
+
+Use the launch script to activate the environment and run the player:
 
 ```bash
-python movieplayer.py
+./launch.sh
 ```
 
 ---
@@ -84,49 +101,57 @@ You can run the system on a regular PC by enabling:
 DEVELOPMENT_MODE = true
 ```
 
-This disables hardware access and renders images to disk for viewing in the browser.
+This disables hardware access and renders images to disk instead of using the e-paper display.
 
 ---
 
 ## 🌐 Web Interface
 
-Run the web server on your Pi and open it from a browser on the network:
+After starting the app, access the web UI at:
 
-```bash
+```text
 http://<your-pi-ip>:8000
 ```
 
 Features:
-- Upload videos
-- Adjust frame update intervals
-- Toggle playback
-- View live preview of the frame
+
+* Upload videos
+* Adjust frame update intervals
+* Toggle playback
+* View live preview of the frame
 
 ---
 
 ## 🧱 Architecture Changes
 
-- ✅ Replaced `VideoSettings` with SQLite as the single source of truth
-- ✅ All timing and frame data now pulled live from the database
-- ✅ Playback state (`current_frame`) is updated after each frame
-- ✅ Supports real-time updates from the web interface without restarting
+* ✅ Replaced `VideoSettings` JSON state with SQLite
+* ✅ All timing and frame data now pulled live from the database
+* ✅ Playback state (`current_frame`) is updated after each frame
+* ✅ Supports real-time updates from the web interface
 
 ---
 
 ## 🧪 To Do
 
-- [ ] Playlist or folder-based auto playback
-- [ ] Better error handling around bad video files
-- [ ] Add Waveshare display support
-- [ ] Optionally export video metadata or history
-- [ ] Offline-friendly log viewer in the web UI
+* [ ] Playlist or folder-based auto playback
+* [ ] Better error handling around bad video files
+* [ ] Add Waveshare display support
+* [ ] Optionally export video metadata or history
+* [ ] Offline-friendly log viewer in the web UI
 
 ---
 
 ## 🙋 Author
 
-**Ryan Lane**  
+**Ryan Lane**
 Website: [ryanlane.com](http://ryanlane.com)
 
-Support me on Ko-fi:  
+Support me on Ko-fi:
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D81I8VM)
+
+```
+
+---
+
+Would you like this committed directly into your repo’s `README.md` and staged with `git`?
+```
