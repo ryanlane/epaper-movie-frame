@@ -1,7 +1,3 @@
-Here's your updated `README.md` reflecting the new install and launch scripts, structured for clarity and simplicity:
-
----
-
 ````markdown
 # E-Paper Movie Frame
 
@@ -148,10 +144,3 @@ Website: [ryanlane.com](http://ryanlane.com)
 
 Support me on Ko-fi:
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D81I8VM)
-
-```
-
----
-
-Would you like this committed directly into your repo’s `README.md` and staged with `git`?
-```
