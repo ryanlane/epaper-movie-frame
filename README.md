@@ -1,4 +1,3 @@
-````markdown
 # E-Paper Movie Frame
 
 This Python project plays a video back at an extremely slow pace, updating a frame on a color e-paper display (like Pimoroni Inky Impression) at a defined interval. A local web interface allows you to manage and view playback in real-time.
