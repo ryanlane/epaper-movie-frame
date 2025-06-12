@@ -26,7 +26,7 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 
 ### Hardware
 
-- Raspberry Pi (Zero W or newer recommended)
+- Raspberry Pi (Zero 2 W or better recommended)
 - [Pimoroni Inky Impression 7.3"](https://shop.pimoroni.com/products/inky-impression-7-3)
 
 ### Software
