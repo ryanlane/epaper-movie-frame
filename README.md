@@ -1,8 +1,3 @@
-Here's your updated `README.md` reflecting the new install and launch scripts, structured for clarity and simplicity:
-
----
-
-````markdown
 # E-Paper Movie Frame
 
 This Python project plays a video back at an extremely slow pace, updating a frame on a color e-paper display (like Pimoroni Inky Impression) at a defined interval. A local web interface allows you to manage and view playback in real-time.
@@ -31,7 +26,7 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 
 ### Hardware
 
-- Raspberry Pi (Zero W or newer recommended)
+- Raspberry Pi (Zero 2 W or better recommended)
 - [Pimoroni Inky Impression 7.3"](https://shop.pimoroni.com/products/inky-impression-7-3)
 
 ### Software
@@ -138,6 +133,7 @@ Features:
 * [ ] Add Waveshare display support
 * [ ] Optionally export video metadata or history
 * [ ] Offline-friendly log viewer in the web UI
+* [ ] Build full OOBE for easy deployment
 
 ---
 
@@ -148,10 +144,3 @@ Website: [ryanlane.com](http://ryanlane.com)
 
 Support me on Ko-fi:
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D81I8VM)
-
-```
-
----
-
-Would you like this committed directly into your repo’s `README.md` and staged with `git`?
-```
