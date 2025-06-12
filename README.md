@@ -28,6 +28,8 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 
 - Raspberry Pi (Zero 2 W or better recommended)
 - [Pimoroni Inky Impression 7.3"](https://shop.pimoroni.com/products/inky-impression-7-3)
+- Photo frame [FrameWorks 8” x 10”](https://www.amazon.com/dp/B09KML783D)
+- Custom Matboard [Matboard & More](https://www.matboardandmore.com/)
 
 ### Software
 
