@@ -133,6 +133,7 @@ Features:
 * [ ] Add Waveshare display support
 * [ ] Optionally export video metadata or history
 * [ ] Offline-friendly log viewer in the web UI
+* [ ] Build full OOBE for easy deployment
 
 ---
 
