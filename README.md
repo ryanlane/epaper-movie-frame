@@ -51,8 +51,10 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 git clone https://github.com/ryanlane/epaper-movie-frame.git
 cd epaper-movie-frame
 ````
+### 2. Configure Pi
+Make sure that SPI is enabled via `sudo raspi-config` or by editing `/boot/config.txt.`
 
-### 2. Run system-level setup (one-time only)
+### 3. Run system-level setup (one-time only)
 
 This installs required packages like OpenCV, dev headers, and virtualenv support.
 
@@ -61,14 +63,14 @@ chmod +x system-setup.sh
 ./system-setup.sh
 ```
 
-### 3. Create virtual environment and install Python dependencies
+### 4. Create virtual environment and install Python dependencies
 
 ```bash
 chmod +x project-install.sh
 ./project-install.sh
 ```
 
-### 4. Create your `config.toml`
+### 5. Create your `config.toml`
 
 If it doesn’t exist, the app will prompt you. Example contents:
 
