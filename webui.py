@@ -176,16 +176,17 @@ if __name__ == "__main__":
 
     app.run(host="0.0.0.0", port=8000, debug=True)
 
-@app.post('/trigger_display_update/{movie_id}')
-def trigger_display_update(movie_id: int, db: Session = Depends(get_db)):
-    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
-    settings = db.query(models.Settings).first()
+@app.route('/trigger_display_update/<int:movie_id>', methods=['POST'])
+def trigger_display_update(movie_id):
+    movie = database.get_movie_by_id(movie_id)
+    settings = database.get_settings()
 
-    if not movie:
-        return JSONResponse(status_code=404, content={"error": "Movie not found"})
+    if not movie or not settings:
+        return jsonify({"error": "Invalid ID or settings"}), 400
 
     video_utils.process_video(movie, settings)
-    eframe_inky.show_on_inky(f"static/{movie_id}/frame.jpg")
+    frame_path = os.path.join(f"static/{movie_id}", "frame.jpg")
+    eframe_inky.show_on_inky(frame_path)
 
-    return JSONResponse(status_code=200, content={"message": "Display updated"})
+    return jsonify({"message": "E-Ink display updated"})
 

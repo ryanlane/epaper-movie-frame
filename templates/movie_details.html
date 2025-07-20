@@ -120,12 +120,11 @@
                 return response.json();
             })
             .then(data => {
-                console.log(data.message);
-                alert('Display updated!');
+                alert(data.message || 'Display updated!');
             })
             .catch(error => {
-                console.error(error);
                 alert('Error updating display');
+                console.error(error);
             });
         });
     </script>
