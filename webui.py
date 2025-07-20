@@ -175,3 +175,17 @@ if __name__ == "__main__":
     app.logger.addHandler(handler)
 
     app.run(host="0.0.0.0", port=8000, debug=True)
+
+@app.post('/trigger_display_update/{movie_id}')
+def trigger_display_update(movie_id: int, db: Session = Depends(get_db)):
+    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+    settings = db.query(models.Settings).first()
+
+    if not movie:
+        return JSONResponse(status_code=404, content={"error": "Movie not found"})
+
+    video_utils.process_video(movie, settings)
+    eframe_inky.show_on_inky(f"static/{movie_id}/frame.jpg")
+
+    return JSONResponse(status_code=200, content={"message": "Display updated"})
+
