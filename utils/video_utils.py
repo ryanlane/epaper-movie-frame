@@ -9,16 +9,16 @@ from datetime import datetime, timedelta
 
 DEV_MODE = config.read_toml_file("config.toml").get("DEVELOPMENT_MODE", False)
 
-def should_skip_due_to_quiet_hours(settings):
+def should_skip_due_to_quiet_hours(movie):
     """
     Returns True if the current time falls within the quiet hours range and quiet hours are enabled.
     Otherwise, returns False.
     """
-    if not settings.get('use_quiet_hours'):
+    if not movie.get('use_quiet_hours'):
         return False  # Not enabled
 
-    quiet_start = int(settings.get('quiet_start', 22))
-    quiet_end = int(settings.get('quiet_end', 7))
+    quiet_start = int(movie.get('quiet_start', 22))
+    quiet_end = int(movie.get('quiet_end', 7))
     current_hour = datetime.now().hour
 
     if quiet_start < quiet_end:
@@ -119,9 +119,9 @@ def play_video(logger):
     movie = get_active_movie()
     settings = get_settings()
 
-    # if should_skip_due_to_quiet_hours(settings):
-    #     logger.info("Playback skipped due to quiet hours.")
-    #     return
+    if should_skip_due_to_quiet_hours(movie):
+        logger.info("Playback skipped due to quiet hours.")
+        return
 
     if not movie or not settings:
         logger.warning("No active movie or settings found.")
