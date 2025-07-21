@@ -34,3 +34,8 @@ main {
     width: 100%;
     appearance: none;
 }
+
+.button-container {
+    display: flex;
+    gap: 20px;
+}
