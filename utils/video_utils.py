@@ -119,9 +119,9 @@ def play_video(logger):
     movie = get_active_movie()
     settings = get_settings()
 
-    if should_skip_due_to_quiet_hours(settings):
-        logger.info("Playback skipped due to quiet hours.")
-        return
+    # if should_skip_due_to_quiet_hours(settings):
+    #     logger.info("Playback skipped due to quiet hours.")
+    #     return
 
     if not movie or not settings:
         logger.warning("No active movie or settings found.")
