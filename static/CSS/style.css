@@ -39,3 +39,7 @@ main {
     display: flex;
     gap: 20px;
 }
+
+.spacer {
+    height: 20px; /* Adjust as needed */
+}

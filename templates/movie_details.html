@@ -37,11 +37,19 @@
             <label for="isRandom">You love chaos and would prefer a random frame at every interval</label>
             <input type="checkbox" name="isRandom" id="isRandom" value="True" {% if movie['isRandom'] %} checked {% endif %}>
         </div>
+        <div class="spacer"></div>
+        <div id="quiet_hours">
+            <label for="quiet_start">Quiet Hours Start (24h):</label>
+            <input type="number" name="quiet_start" id="quiet_start" min="0" max="23" value="{{ movie.quiet_start or 22 }}">
 
+            <label for="quiet_end">Quiet Hours End (24h):</label>
+            <input type="number" name="quiet_end" id="quiet_end" min="0" max="23" value="{{ movie.quiet_end or 7 }}">
+        </div>
+        <div class="spacer"></div>        
         <div class="button-container"><button id="submitButton">Submit</button><button id="refreshDisplay">Update Display Now</button></div>
     </form>
 
-
+    <div class="spacer"></div>
 
     <img src="{{ url_for('static', filename=movie['id'] ~ '/frame.jpg') }}" />
     <div style="margin-top: 1em;">

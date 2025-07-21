@@ -10,48 +10,65 @@ def get_db_connection():
     return conn
 
 def init_db():
-    if not os.path.exists(DB_PATH):
-        conn = get_db_connection()
-        cur = conn.cursor()
+    is_new_db = not os.path.exists(DB_PATH)
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS Settings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                VideoRootPath TEXT,
-                Resolution TEXT
-            )
-        ''')
+    # Always ensure core tables exist
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS Settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            VideoRootPath TEXT,
+            Resolution TEXT
+        )
+    ''')
 
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS Movie (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                video_path TEXT,
-                total_frames INTEGER,
-                time_per_frame INTEGER,
-                skip_frames INTEGER,
-                current_frame INTEGER,
-                isActive BOOLEAN DEFAULT 0,
-                isRandom BOOLEAN DEFAULT 0
-            )
-        ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS Movie (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            video_path TEXT,
+            total_frames INTEGER,
+            time_per_frame INTEGER,
+            skip_frames INTEGER,
+            current_frame INTEGER,
+            isActive BOOLEAN DEFAULT 0,
+            isRandom BOOLEAN DEFAULT 0,
+            use_quiet_hours BOOLEAN DEFAULT 0,
+            quiet_start INTEGER DEFAULT 22,
+            quiet_end INTEGER DEFAULT 7
+        )
+    ''')
 
-        cur.execute('''
-            CREATE UNIQUE INDEX IF NOT EXISTS unique_active_movie
-            ON Movie (isActive)
-            WHERE isActive = 1
-        ''')
+    cur.execute('''
+        CREATE UNIQUE INDEX IF NOT EXISTS unique_active_movie
+        ON Movie (isActive)
+        WHERE isActive = 1
+    ''')
 
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS NowPlaying (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                movie_id INTEGER NOT NULL,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS NowPlaying (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            movie_id INTEGER NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
 
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS SchemaVersion (
+            version INTEGER
+        )
+    ''')
 
-        conn.commit()
-        conn.close()
+    # If brand new DB, initialize schema version
+    if is_new_db:
+        cur.execute("INSERT INTO SchemaVersion (version) VALUES (2)")
+
+    conn.commit()
+    conn.close()
+
+    # Apply migrations for older DBs
+    run_migrations()
+
 
 def get_settings():
     conn = get_db_connection()
@@ -222,3 +239,50 @@ def delete_movie(movie_id):
         conn.commit()
     conn.close()
     return movie
+
+def get_schema_version():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Try to fetch the version
+        version = cur.execute("SELECT version FROM SchemaVersion").fetchone()
+        if version:
+            return version['version']
+        else:
+            # Table exists but no row yet
+            cur.execute("INSERT INTO SchemaVersion (version) VALUES (1)")
+            conn.commit()
+            return 1
+    except sqlite3.OperationalError:
+        # Table doesn't exist — create it and initialize
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS SchemaVersion (
+                version INTEGER
+            )
+        ''')
+        cur.execute("INSERT INTO SchemaVersion (version) VALUES (1)")
+        conn.commit()
+        return 1
+    finally:
+        conn.close()
+
+
+def run_migrations():
+    current_version = get_schema_version()
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if current_version < 2:
+        print("🔧 Applying schema migration to version 2...")
+        cur.execute("ALTER TABLE Movie ADD COLUMN use_quiet_hours BOOLEAN DEFAULT 0")
+        cur.execute("ALTER TABLE Movie ADD COLUMN quiet_start INTEGER DEFAULT 22")
+        cur.execute("ALTER TABLE Movie ADD COLUMN quiet_end INTEGER DEFAULT 7")
+        cur.execute("UPDATE SchemaVersion SET version = 2")
+        conn.commit()
+
+    # Future migrations:
+    # if current_version < 3:
+    #     cur.execute(...)
+    #     cur.execute("UPDATE SchemaVersion SET version = 3")
+
+    conn.close()
