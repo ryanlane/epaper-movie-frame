@@ -170,13 +170,21 @@ def insert_movie(video_path, total_frames):
 def update_movie(payload):
     conn = get_db_connection()
     cur = conn.cursor()
+
+    use_quiet_hours = int(payload.get('use_quiet_hours', 0))
+    quiet_start = int(payload.get('quiet_start', 22))
+    quiet_end = int(payload.get('quiet_end', 7))
+
     cur.execute('''
         UPDATE Movie SET
             time_per_frame = ?,
             skip_frames = ?,
             current_frame = ?,
             isRandom = ?,
-            total_frames = ?
+            total_frames = ?,
+            use_quiet_hours = ?,
+            quiet_start = ?,
+            quiet_end = ?
         WHERE id = ?
     ''', (
         int(payload['time_per_frame']),
@@ -184,8 +192,12 @@ def update_movie(payload):
         int(payload['current_frame']),
         int(payload.get('isRandom', 0)),
         int(payload['total_frames']),
+        use_quiet_hours,
+        quiet_start,
+        quiet_end,
         int(payload['id'])
     ))
+
     conn.commit()
     updated_movie = conn.execute('SELECT * FROM Movie WHERE id = ?', (payload['id'],)).fetchone()
     conn.close()
