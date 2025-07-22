@@ -37,6 +37,13 @@ def home():
     if active_movie:
         playback_time = video_utils.calculate_playback_time(active_movie)
 
+    quiet_info = {
+        "enabled": bool(int(settings['use_quiet_hours'])),
+        "start": settings['quiet_start'],
+        "end": settings['quiet_end'],
+        "active": video_utils.should_skip_due_to_quiet_hours(settings)
+    }
+
     return render_template(
         "index.html",
         movies=movies,
@@ -44,7 +51,8 @@ def home():
         video_dir_size=round(video_dir_size, 2),
         dev_mode=config_data.get("DEVELOPMENT_MODE", False),
         active_movie=active_movie,
-        playback_time=playback_time
+        playback_time=playback_time,
+        quiet_info=quiet_info
     )
 
 @app.route('/movies')
@@ -147,7 +155,6 @@ def upload():
 
 
 
-
 @app.route('/update_movie', methods=['POST'])
 def update_movie():
     payload = request.get_json()
@@ -214,4 +221,14 @@ def trigger_display_update(movie_id):
     eframe_inky.show_on_inky(frame_path)
 
     return jsonify({"message": "E-Ink display updated"})
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings_page():
+    if request.method == 'POST':
+        payload = request.get_json()
+        updated = database.update_settings(payload)
+        return jsonify({"message": "Settings updated", "settings": dict(updated)})
+
+    settings = database.get_settings()
+    return render_template('settings.html', settings=settings)
 

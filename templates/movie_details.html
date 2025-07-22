@@ -40,22 +40,6 @@
                 <input type="checkbox" name="isRandom" id="isRandom" value="True" {% if movie['isRandom'] %} checked {% endif %}>
             </div>
             <div class="spacer"></div>
-            <div id="enable_quiet_hours">
-                <label>
-                    <input type="checkbox" id="use_quiet_hours" name="use_quiet_hours" value="1" {% if movie.use_quiet_hours %}checked{% endif %}>
-                    Enable Quiet Hours
-                </label>
-            </div>
-
-            <div id="quiet_hours" {% if not movie.use_quiet_hours %}style="display: none;"{% endif %}>
-                <label for="quiet_start">Quiet Hours Start (24h):</label>
-                <input type="number" name="quiet_start" id="quiet_start" min="0" max="23" value="{{ movie.quiet_start or 22 }}">
-
-                <label for="quiet_end">Quiet Hours End (24h):</label>
-                <input type="number" name="quiet_end" id="quiet_end" min="0" max="23" value="{{ movie.quiet_end or 7 }}">
-            </div>
-
-            <div class="spacer"></div>        
             <div class="button-container">
                 <div><button id="submitButton">Submit</button></div>
                 <div><button id="refreshDisplay">Update Display Now</button></div>
@@ -75,11 +59,6 @@
             customTime.style.display = this.value === "0" ? "block" : "none";
         });
 
-        document.getElementById('use_quiet_hours').addEventListener('change', function() {
-            const quietHoursDiv = document.getElementById('quiet_hours');
-            quietHoursDiv.style.display = this.checked ? 'block' : 'none';
-        });
-
         document.getElementById("submitButton").addEventListener("click", function (e) {
             e.preventDefault(); // prevent default form submit
             const form = document.getElementById("movieForm");
@@ -92,7 +71,6 @@
 
             // Normalize checkboxes
             formObject.isRandom = formObject.isRandom ? 1 : 0;
-            formObject.use_quiet_hours = document.getElementById("use_quiet_hours").checked ? 1 : 0;
 
             fetch('/update_movie', {
                 method: 'POST',

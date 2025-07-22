@@ -56,17 +56,32 @@ button:active {
 
 
 
-nav {
-    background-color: rgba(0,0,0,0.20);
+.navbar {
+    background-color: rgba(0, 0, 0, 0.2);
     padding: 1em;
+    position: relative;
 }
 
-nav a {
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
     margin-right: 1em;
     font-size: 1.2em;
     text-decoration: none;
     font-weight: bold;
-    color: #ffffff;
+    color: orange;
 }
 
 main {
@@ -136,4 +151,36 @@ body.dev-mode {
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+.quiet-hours {
+    margin: 1em 0;
+    padding: 0.5em;
+    border-left: 4px solid #888;
+    background: rgba(0,0,0,0.1);
+}
+
+.quiet-hours.active {
+    background: rgba(255,0,0,0.1);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        margin-top: 1em;
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links a {
+        margin: 0.5em 0;
+    }
 }

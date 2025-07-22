@@ -4,14 +4,31 @@
 {% block content %}
     <h1>Movie Frame Controls</h1>
 
+    {% if quiet_info.enabled %}
+        <div class="quiet-hours {% if quiet_info.active %}active{% endif %}">
+            💤 Quiet Hours are <strong>enabled</strong>
+            ({{ quiet_info.start }}:00 – {{ quiet_info.end }}:00)
+            {% if quiet_info.active %}
+                and <span style="color: red;">active now</span>.
+            {% else %}
+                but <span style="color: green;">not currently active</span>.
+            {% endif %}
+            <a href="{{ url_for('settings_page') }}" style="margin-left: 1em;">Edit Settings</a>
+        </div>
+    {% else %}
+        <!-- <div style="margin: 1em 0; font-size: 0.9em; color: #666;">
+            Quiet Hours are disabled.
+            <a href="{{ url_for('settings_page') }}">Enable in Settings</a>
+        </div> -->
+    {% endif %}
 
     
-        {% if active_movie %}
-            {% set movie = active_movie %}
-            <div id="playback_status"></div>
-                {% include "_movie_playback_status.html" %}
-            </div>
-        {% endif %}
+    {% if active_movie %}
+        {% set movie = active_movie %}
+        <div id="playback_status"></div>
+            {% include "_movie_playback_status.html" %}
+        </div>
+    {% endif %}
     
 
     

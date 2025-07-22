@@ -8,10 +8,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
 </head>
 <body {% if dev_mode %}class="dev-mode"{% endif %}>
-    <nav>
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('movies') }}">Movies</a>
-        <a href="{{ url_for('upload') }}">Upload Movie</a>
+    <nav class="navbar">
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('movies') }}">Movies</a>
+            <a href="{{ url_for('upload') }}">Upload Movie</a>
+            <a href="{{ url_for('settings_page') }}">Settings</a>
+        </div>
     </nav>
 
     <main>
@@ -20,5 +24,12 @@
         {% endif %}
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('show');
+        }
+    </script>
 </body>
 </html>

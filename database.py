@@ -19,7 +19,10 @@ def init_db():
         CREATE TABLE IF NOT EXISTS Settings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             VideoRootPath TEXT,
-            Resolution TEXT
+            Resolution TEXT,
+            use_quiet_hours BOOLEAN DEFAULT 0,
+            quiet_start INTEGER DEFAULT 22,
+            quiet_end INTEGER DEFAULT 7
         )
     ''')
 
@@ -32,10 +35,7 @@ def init_db():
             skip_frames INTEGER,
             current_frame INTEGER,
             isActive BOOLEAN DEFAULT 0,
-            isRandom BOOLEAN DEFAULT 0,
-            use_quiet_hours BOOLEAN DEFAULT 0,
-            quiet_start INTEGER DEFAULT 22,
-            quiet_end INTEGER DEFAULT 7
+            isRandom BOOLEAN DEFAULT 0
         )
     ''')
 
@@ -167,13 +167,30 @@ def insert_movie(video_path, total_frames):
     conn.close()
     return movie
 
-def update_movie(payload):
+def update_settings(payload):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    use_quiet_hours = int(payload.get('use_quiet_hours', 0))
-    quiet_start = int(payload.get('quiet_start', 22))
-    quiet_end = int(payload.get('quiet_end', 7))
+    cur.execute('''
+        UPDATE Settings SET
+            use_quiet_hours = ?,
+            quiet_start = ?,
+            quiet_end = ?
+        WHERE id = 1
+    ''', (
+        int(payload.get('use_quiet_hours', 0)),
+        int(payload.get('quiet_start', 22)),
+        int(payload.get('quiet_end', 7)),
+    ))
+    conn.commit()
+    updated = cur.execute("SELECT * FROM Settings WHERE id = 1").fetchone()
+    conn.close()
+    return updated
+
+
+def update_movie(payload):
+    conn = get_db_connection()
+    cur = conn.cursor()   
 
     cur.execute('''
         UPDATE Movie SET
@@ -181,10 +198,7 @@ def update_movie(payload):
             skip_frames = ?,
             current_frame = ?,
             isRandom = ?,
-            total_frames = ?,
-            use_quiet_hours = ?,
-            quiet_start = ?,
-            quiet_end = ?
+            total_frames = ?
         WHERE id = ?
     ''', (
         int(payload['time_per_frame']),
@@ -192,9 +206,6 @@ def update_movie(payload):
         int(payload['current_frame']),
         int(payload.get('isRandom', 0)),
         int(payload['total_frames']),
-        use_quiet_hours,
-        quiet_start,
-        quiet_end,
         int(payload['id'])
     ))
 
@@ -284,17 +295,15 @@ def run_migrations():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    if current_version < 2:
-        print("🔧 Applying schema migration to version 2...")
-        cur.execute("ALTER TABLE Movie ADD COLUMN use_quiet_hours BOOLEAN DEFAULT 0")
-        cur.execute("ALTER TABLE Movie ADD COLUMN quiet_start INTEGER DEFAULT 22")
-        cur.execute("ALTER TABLE Movie ADD COLUMN quiet_end INTEGER DEFAULT 7")
-        cur.execute("UPDATE SchemaVersion SET version = 2")
+    if current_version < 3:
+        print("🔧 Applying schema migration to version 3...")
+
+        try:
+            cur.execute("ALTER TABLE Settings ADD COLUMN use_quiet_hours BOOLEAN DEFAULT 0")
+            cur.execute("ALTER TABLE Settings ADD COLUMN quiet_start INTEGER DEFAULT 22")
+            cur.execute("ALTER TABLE Settings ADD COLUMN quiet_end INTEGER DEFAULT 7")
+        except sqlite3.OperationalError as e:
+            print("⚠️ Warning during migration to v3:", e)
+
+        cur.execute("UPDATE SchemaVersion SET version = 3")
         conn.commit()
-
-    # Future migrations:
-    # if current_version < 3:
-    #     cur.execute(...)
-    #     cur.execute("UPDATE SchemaVersion SET version = 3")
-
-    conn.close()

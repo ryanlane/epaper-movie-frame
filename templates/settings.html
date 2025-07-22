@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}Movie Frame Home{% endblock %}
+{% block content %}
+    <h1>Settings</h1>
+
+    <form id="settingsForm">
+        <label>
+            <input type="checkbox" name="use_quiet_hours" id="use_quiet_hours"
+                   {% if settings.use_quiet_hours %}checked{% endif %}>
+            Enable Quiet Hours
+        </label>
+        <br>
+
+        <label for="quiet_start">Quiet Start Hour (0–23):</label>
+        <input type="number" id="quiet_start" name="quiet_start" min="0" max="23"
+               value="{{ settings.quiet_start or 22 }}">
+        <br>
+
+        <label for="quiet_end">Quiet End Hour (0–23):</label>
+        <input type="number" id="quiet_end" name="quiet_end" min="0" max="23"
+               value="{{ settings.quiet_end or 7 }}">
+        <br><br>
+
+        <button type="submit">Save Settings</button>
+    </form>
+
+    <script>
+        document.getElementById('settingsForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const payload = {
+                use_quiet_hours: document.getElementById('use_quiet_hours').checked ? 1 : 0,
+                quiet_start: document.getElementById('quiet_start').value,
+                quiet_end: document.getElementById('quiet_end').value
+            };
+
+            fetch('/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                alert('Settings saved!');
+            })
+            .catch(err => {
+                console.error('Failed to update settings', err);
+            });
+        });
+    </script>
+    
+
+    
+
+{% endblock %}
