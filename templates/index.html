@@ -4,38 +4,36 @@
 {% block content %}
     <h1>Movie Frame Controls</h1>
 
-    {% if dev_mode %}
-        <p style="color: orange;"><strong>Developer Mode:</strong> Frame is not being sent to e-ink display.</p>
-    {% endif %}
-
-
-    {% if movies %}
-        <ul>
-            {% for movie in movies %}
-                <li>
-                    <a href="{{ url_for('movie', movie_id=movie.id) }}">{{ movie.video_path }}</a>
-                    {% if movie.isActive %}
-                        <span style="background: green; color: white; padding: 2px 6px; border-radius: 4px;">Active</span>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+    {% if quiet_info.enabled %}
+        <div class="quiet-hours {% if quiet_info.active %}active{% endif %}">
+            💤 Quiet Hours are <strong>enabled</strong>
+            ({{ quiet_info.start }}:00 – {{ quiet_info.end }}:00)
+            {% if quiet_info.active %}
+                and <span style="color: red;">active now</span>.
+            {% else %}
+                but <span style="color: green;">not currently active</span>.
+            {% endif %}
+            <a href="{{ url_for('settings_page') }}" style="margin-left: 1em;">Edit Settings</a>
+        </div>
     {% else %}
-        <p>No movies found. Add one from the <a href="{{ url_for('first_run') }}">first run</a> page.</p>
+        <!-- <div style="margin: 1em 0; font-size: 0.9em; color: #666;">
+            Quiet Hours are disabled.
+            <a href="{{ url_for('settings_page') }}">Enable in Settings</a>
+        </div> -->
     {% endif %}
 
-    <form action="{{ url_for('stop_playback') }}" method="post" style="margin-top: 1em;">
-        <button type="submit">Stop Playback</button>
-    </form>
+    
+    {% if active_movie %}
+        {% set movie = active_movie %}
+        <div id="playback_status"></div>
+            {% include "_movie_playback_status.html" %}
+        </div>
+    {% else %}
+        <p>No movie is currently playing.</p>
+        <a href="{{ url_for('movies') }}">Select a movie for playback</a>
+    {% endif %}
+    
 
-    <div>
-        <h2>System Info</h2>
-        <ul>
-            <li><strong>Total Disk:</strong> {{ disk_stats.total_gb }} GB</li>
-            <li><strong>Used Disk:</strong> {{ disk_stats.used_gb }} GB</li>
-            <li><strong>Free Disk:</strong> {{ disk_stats.free_gb }} GB</li>
-            <li><strong>Video Directory Size:</strong> {{ video_dir_size }} GB</li>
-        </ul>
-    </div>
+    
 
 {% endblock %}

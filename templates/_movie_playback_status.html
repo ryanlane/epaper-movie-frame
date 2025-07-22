@@ -1,0 +1,27 @@
+    <div class="movie-playback">
+        <img class="active_frame" src="{{ url_for('static', filename=movie['id'] ~ '/frame.jpg') }}" />
+        <div style="margin-top: 1em;">
+            <label for="frameProgress">Progress:</label>
+            <progress id="frameProgress" max="{{ movie['total_frames'] }}" value="{{ movie['current_frame'] }}"></progress>
+            <div>frame: {{ movie['current_frame'] }} of {{ movie['total_frames'] }}</div>
+        </div>
+
+        <p><strong>Estimated playback time:</strong>
+            {{ playback_time[0] }} years,
+            {{ playback_time[1] }} days,
+            {{ playback_time[2] }} hours,
+            {{ playback_time[3] }} minutes
+        </p>
+
+        {% if movie['isActive'] %}
+            <form action="{{ url_for('stop_playback') }}" method="post">
+                <button type="submit">Stop Playback</button>
+            </form>
+        {% else %}
+            <form action="{{ url_for('start_playback', movie_id=movie['id']) }}" method="post">
+                <button type="submit">Start Playback</button>
+            </form>
+        {% endif %}
+    </div>
+
+    

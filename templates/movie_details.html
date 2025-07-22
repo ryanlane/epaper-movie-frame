@@ -7,96 +7,56 @@
 
     <form id="movieForm">
         <input type="hidden" name="id" value="{{ movie['id'] }}">
+        <div class="form-flex">
+            <div>
+                <label for="time_per_frame">Select update interval:</label>
+                <select name="time_per_frame" id="time_per_frame">
+                    <option value="10" {% if movie['time_per_frame'] == 10 %} selected {% endif %}>Every 10 minutes</option>
+                    <option value="60" {% if movie['time_per_frame'] == 60 %} selected {% endif %}>Every hour</option>
+                    <option value="1440" {% if movie['time_per_frame'] == 1440 %} selected {% endif %}>Every day</option>
+                    <option value="0" {% if movie['time_per_frame'] not in [10, 60, 1440] %} selected {% endif %}>Other (provide custom time in minutes)</option>
+                </select>
+            </div>
 
-        <label for="time_per_frame">Select update interval:</label>
-        <select name="time_per_frame" id="time_per_frame">
-            <option value="10" {% if movie['time_per_frame'] == 10 %} selected {% endif %}>Every 10 minutes</option>
-            <option value="60" {% if movie['time_per_frame'] == 60 %} selected {% endif %}>Every hour</option>
-            <option value="1440" {% if movie['time_per_frame'] == 1440 %} selected {% endif %}>Every day</option>
-            <option value="0" {% if movie['time_per_frame'] not in [10, 60, 1440] %} selected {% endif %}>Other (provide custom time in minutes)</option>
-        </select>
 
-        <br>
-        <div id="custom_time" {% if movie['time_per_frame'] in [10, 60, 1440] %} style="display: none;" {% endif %}>
-            <label for="custom_time">Custom time (minutes):</label>
-            <input type="number" name="custom_time" id="custom_time" min="0" value="{{ movie['time_per_frame'] if movie['time_per_frame'] not in [10, 60, 1440] else 0 }}">
+            <div id="custom_time" {% if movie['time_per_frame'] in [10, 60, 1440] %} style="display: none;" {% endif %}>
+                <label for="custom_time">Custom time (minutes):</label>
+                <input type="number" name="custom_time" id="custom_time" min="0" value="{{ movie['time_per_frame'] if movie['time_per_frame'] not in [10, 60, 1440] else 0 }}">
+            </div>
+
+
+            <div id="skip_frames">
+                <label for="skip_frames">Number of frames to skip per update:</label>
+                <input type="number" name="skip_frames" id="skip_frames" min="1" value="{{ movie['skip_frames'] }}">
+            </div>
+
+            <div id="current_frame">
+                <label for="current_frame">Current active frame (this is also the starting frame for first runs):</label>
+                <input type="number" name="current_frame" id="current_frame" min="1" value="{{ movie['current_frame'] }}">
+            </div>
+
+            <div id="isRandom">
+                <label for="isRandom">You love chaos and would prefer a random frame at every interval</label>
+                <input type="checkbox" name="isRandom" id="isRandom" value="True" {% if movie['isRandom'] %} checked {% endif %}>
+            </div>
+            <div class="spacer"></div>
+            <div class="button-container">
+                <div><button id="submitButton">Submit</button></div>
+                <div><button id="refreshDisplay">Update Display Now</button></div>
+            </div>
         </div>
-
-        <br>
-        <div id="skip_frames">
-            <label for="skip_frames">Number of frames to skip per update:</label>
-            <input type="number" name="skip_frames" id="skip_frames" min="1" value="{{ movie['skip_frames'] }}">
-        </div>
-
-        <div id="current_frame">
-            <label for="current_frame">Current active frame (this is also the starting frame for first runs):</label>
-            <input type="number" name="current_frame" id="current_frame" min="1" value="{{ movie['current_frame'] }}">
-        </div>
-
-        <div id="isRandom">
-            <label for="isRandom">You love chaos and would prefer a random frame at every interval</label>
-            <input type="checkbox" name="isRandom" id="isRandom" value="True" {% if movie['isRandom'] %} checked {% endif %}>
-        </div>
-        <div class="spacer"></div>
-        <div id="enable_quiet_hours">
-            <label>
-                <input type="checkbox" id="use_quiet_hours" name="use_quiet_hours" value="1" {% if movie.use_quiet_hours %}checked{% endif %}>
-                Enable Quiet Hours
-            </label>
-        </div>
-
-        <div id="quiet_hours" {% if not movie.use_quiet_hours %}style="display: none;"{% endif %}>
-            <label for="quiet_start">Quiet Hours Start (24h):</label>
-            <input type="number" name="quiet_start" id="quiet_start" min="0" max="23" value="{{ movie.quiet_start or 22 }}">
-
-            <label for="quiet_end">Quiet Hours End (24h):</label>
-            <input type="number" name="quiet_end" id="quiet_end" min="0" max="23" value="{{ movie.quiet_end or 7 }}">
-        </div>
-
-        <div class="spacer"></div>        
-        <div class="button-container"><button id="submitButton">Submit</button><button id="refreshDisplay">Update Display Now</button></div>
     </form>
 
     <div class="spacer"></div>
 
-    <img src="{{ url_for('static', filename=movie['id'] ~ '/frame.jpg') }}" />
-    <div style="margin-top: 1em;">
-        <label for="frameProgress">Progress:</label>
-        <progress id="frameProgress" max="{{ movie['total_frames'] }}" value="{{ movie['current_frame'] }}"></progress>
-        <div>frame: {{ movie['current_frame'] }} of {{ movie['total_frames'] }}</div>
+    <div id="playback_status">
+        {% include "_movie_playback_status.html" %}
     </div>
-
-
-    <p><strong>Estimated playback time:</strong>
-        {{ playback_time[0] }} years,
-        {{ playback_time[1] }} days,
-        {{ playback_time[2] }} hours,
-        {{ playback_time[3] }} minutes
-    </p>
-
-
-    {% if movie['isActive'] %}
-        <form action="{{ url_for('stop_playback') }}" method="post">
-            <button type="submit">Stop Playback</button>
-        </form>
-    {% else %}
-        <form action="{{ url_for('start_playback', movie_id=movie['id']) }}" method="post">
-            <button type="submit">Start Playback</button>
-        </form>
-    {% endif %}
-
-    
-
 
     <script>
         document.getElementById("time_per_frame").addEventListener("change", function () {
             const customTime = document.getElementById("custom_time");
             customTime.style.display = this.value === "0" ? "block" : "none";
-        });
-
-        document.getElementById('use_quiet_hours').addEventListener('change', function() {
-            const quietHoursDiv = document.getElementById('quiet_hours');
-            quietHoursDiv.style.display = this.checked ? 'block' : 'none';
         });
 
         document.getElementById("submitButton").addEventListener("click", function (e) {
@@ -111,7 +71,6 @@
 
             // Normalize checkboxes
             formObject.isRandom = formObject.isRandom ? 1 : 0;
-            formObject.use_quiet_hours = document.getElementById("use_quiet_hours").checked ? 1 : 0;
 
             fetch('/update_movie', {
                 method: 'POST',
@@ -131,7 +90,7 @@
                 console.error('There was an error!', error);
             });
         });
-        
+
         document.getElementById('refreshDisplay').addEventListener('click', function() {
             fetch(`/trigger_display_update/{{ movie.id }}`, {
                 method: 'POST'

@@ -33,7 +33,7 @@ lgpio==0.2.2.0
 lxml==5.4.0
 MarkupSafe==3.0.2
 matplotlib==3.10.3
-numpy==2.3.0
+numpy >= 2.0.0
 opencv-python==4.11.0.86
 packaging==25.0
 pandas==2.3.0

@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from logging.handlers import RotatingFileHandler
 from utils import video_utils, eframe_inky, config
 from werkzeug.utils import secure_filename
+from datetime import datetime
 import database
 
 config_data = config.read_toml_file("config.toml")
@@ -27,12 +28,43 @@ with app.app_context():
 def home():
     movies = database.get_all_movies()
     settings = database.get_settings()
+    active_movie = database.get_active_movie()
+
+    disk_stats = video_utils.get_disk_usage_stats("/")
+    video_dir_size = video_utils.get_directory_size_gb(settings['VideoRootPath'])
+
+    playback_time = None
+    if active_movie:
+        playback_time = video_utils.calculate_playback_time(active_movie)
+
+    quiet_info = {
+        "enabled": bool(int(settings['use_quiet_hours'])),
+        "start": settings['quiet_start'],
+        "end": settings['quiet_end'],
+        "active": video_utils.should_skip_due_to_quiet_hours(settings)
+    }
+
+    return render_template(
+        "index.html",
+        movies=movies,
+        disk_stats=disk_stats,
+        video_dir_size=round(video_dir_size, 2),
+        dev_mode=config_data.get("DEVELOPMENT_MODE", False),
+        active_movie=active_movie,
+        playback_time=playback_time,
+        quiet_info=quiet_info
+    )
+
+@app.route('/movies')
+def movies():
+    movies = database.get_all_movies()
+    settings = database.get_settings()
 
     disk_stats = video_utils.get_disk_usage_stats("/")
     video_dir_size = video_utils.get_directory_size_gb(settings['VideoRootPath'])
 
     return render_template(
-        "index.html",
+        "movies.html",
         movies=movies,
         disk_stats=disk_stats,
         video_dir_size=round(video_dir_size, 2),
@@ -61,7 +93,8 @@ def movie(movie_id):
         "movie_details.html",
         movie=movie,
         current_image_path=current_image_path,
-        playback_time=playback_time
+        playback_time=playback_time,
+        dev_mode=config_data.get("DEVELOPMENT_MODE", False),
     )
 
 @app.route('/add_movie', methods=['POST'])
@@ -119,7 +152,6 @@ def upload():
         return jsonify({"message": "Upload complete!", "movie_id": movie['id']}), 200
 
     return render_template('upload.html')
-
 
 
 
@@ -189,4 +221,14 @@ def trigger_display_update(movie_id):
     eframe_inky.show_on_inky(frame_path)
 
     return jsonify({"message": "E-Ink display updated"})
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings_page():
+    if request.method == 'POST':
+        payload = request.get_json()
+        updated = database.update_settings(payload)
+        return jsonify({"message": "Settings updated", "settings": dict(updated)})
+
+    settings = database.get_settings()
+    return render_template('settings.html', settings=settings)
 

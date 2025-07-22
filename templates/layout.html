@@ -7,14 +7,29 @@
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
 </head>
-<body>
-    <nav>
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('upload') }}">Upload Movie</a>
+<body {% if dev_mode %}class="dev-mode"{% endif %}>
+    <nav class="navbar">
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('movies') }}">Movies</a>
+            <a href="{{ url_for('upload') }}">Upload Movie</a>
+            <a href="{{ url_for('settings_page') }}">Settings</a>
+        </div>
     </nav>
 
     <main>
+        {% if dev_mode %}
+            <div class="dev-mode-text"><strong>Developer Mode:</strong> Frame is not being sent to e-ink display.</div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('show');
+        }
+    </script>
 </body>
 </html>

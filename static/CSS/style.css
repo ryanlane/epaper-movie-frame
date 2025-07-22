@@ -7,29 +7,104 @@
 
 body {
     font-family: 'AncizarSans', sans-serif;
-    margin: 30px;
-    padding: 0;
+    margin: 0px;
+    padding: 30px;
+    background-color: #333;
+    color: #f0f0f0;
 }
 
-nav {
-    background: #f0f0f0;
+
+a:link {
+  color:#b5e550;
+  text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+  color:#b5e550;  
+}
+
+/* mouse over link */
+a:hover {
+  color: #abc32f;
+  text-decoration: underline;
+}
+
+/* selected link */
+a:active {
+  color:#ececa3;
+}
+
+button {
+	background-color:#008000;;
+	border-radius:40px;
+	border:1px solid rgba(0,0,0,0.20);
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:17px;
+	padding:12px 18px;
+	text-decoration:none;
+}
+button:hover {
+	background-color:#5CE65C;
+}
+button:active {
+	position:relative;
+	top:1px;
+}
+
+
+
+.navbar {
+    background-color: rgba(0, 0, 0, 0.2);
     padding: 1em;
+    position: relative;
 }
 
-nav a {
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
     margin-right: 1em;
+    font-size: 1.2em;
     text-decoration: none;
     font-weight: bold;
-    color: #333;
+    color: orange;
 }
 
 main {
     padding: 1em;
 }
 
+.movie-playback {
+    text-align: center;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
+}
+
+.active_frame {
+    width: 100%;
+    height: auto;
+}
+
 #frameProgress {
     color: #669bbc;  /* the progress color */
-    background: lightgrey; /* the background color */
+    background-color: lightgrey; /* the background color */
     height: 20px;
     width: 100%;
     appearance: none;
@@ -37,9 +112,75 @@ main {
 
 .button-container {
     display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
 .spacer {
     height: 20px; /* Adjust as needed */
+}
+
+.active_status {
+    display:inline-block;
+    padding-right: 8px;;
+}
+
+.movie-item {
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+}
+
+.movie-link {
+    display:inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dev-mode-text {
+    color: orange;
+    font-weight: bold;
+}   
+
+body.dev-mode {
+    border: orange 2px solid;
+}
+
+.form-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.quiet-hours {
+    margin: 1em 0;
+    padding: 0.5em;
+    border-left: 4px solid #888;
+    background: rgba(0,0,0,0.1);
+}
+
+.quiet-hours.active {
+    background: rgba(255,0,0,0.1);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        margin-top: 1em;
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links a {
+        margin: 0.5em 0;
+    }
 }

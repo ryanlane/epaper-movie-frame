@@ -10,22 +10,26 @@ from datetime import datetime, timedelta
 DEV_MODE = config.read_toml_file("config.toml").get("DEVELOPMENT_MODE", False)
 
 def should_skip_due_to_quiet_hours(settings):
-    """
-    Returns True if the current time falls within the quiet hours range and quiet hours are enabled.
-    Otherwise, returns False.
-    """
-    if not settings.get('use_quiet_hours'):
-        return False  # Not enabled
+    try:
+        if not int(settings['use_quiet_hours']):
+            return False
 
-    quiet_start = int(settings.get('quiet_start', 22))
-    quiet_end = int(settings.get('quiet_end', 7))
-    current_hour = datetime.now().hour
+        quiet_start = int(settings['quiet_start'])
+        quiet_end = int(settings['quiet_end'])
+        current_hour = datetime.now().hour
 
-    if quiet_start < quiet_end:
-        return quiet_start <= current_hour < quiet_end
-    else:
-        # Overnight wraparound (e.g. 22 to 7)
-        return current_hour >= quiet_start or current_hour < quiet_end
+        print(f"[QUIET HOURS CHECK] now={current_hour}, start={quiet_start}, end={quiet_end}")
+
+        if quiet_start < quiet_end:
+            return quiet_start <= current_hour < quiet_end
+        else:
+            return current_hour >= quiet_start or current_hour < quiet_end
+    except KeyError as e:
+        print(f"[WARNING] Missing expected quiet hour field: {e}")
+        return False
+    except Exception as e:
+        print(f"[ERROR] Quiet hour check failed: {e}")
+        return False
 
 def calculate_playback_time(movie):
     total_frames = movie['total_frames']
@@ -119,9 +123,9 @@ def play_video(logger):
     movie = get_active_movie()
     settings = get_settings()
 
-    # if should_skip_due_to_quiet_hours(settings):
-    #     logger.info("Playback skipped due to quiet hours.")
-    #     return
+    if should_skip_due_to_quiet_hours(settings):
+        logger.info("Playback skipped due to quiet hours.")
+        return
 
     if not movie or not settings:
         logger.warning("No active movie or settings found.")
