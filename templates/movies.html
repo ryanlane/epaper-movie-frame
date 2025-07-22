@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}Movie Frame Home{% endblock %}
+{% block content %}
+    <h1>Movie Frame Controls</h1>
+
+    {% if dev_mode %}
+        <p style="color: orange;"><strong>Developer Mode:</strong> Frame is not being sent to e-ink display.</p>
+    {% endif %}
+
+
+    {% if movies %}        
+            {% for movie in movies %}
+                <div class="movie-item">
+                    <span class="movie-link"><a href="{{ url_for('movie', movie_id=movie.id) }}">{{ movie.video_path }}</a></span>
+                    {% if movie.isActive %}
+                        <span class="active_status">Active</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        
+    {% else %}
+        <p>No movies found. Add one from the <a href="{{ url_for('first_run') }}">first run</a> page.</p>
+    {% endif %}
+
+    <form action="{{ url_for('stop_playback') }}" method="post" style="margin-top: 1em;">
+        <button type="submit">Stop Playback</button>
+    </form>
+
+    <div>
+        <h2>System Info</h2>
+        <ul>
+            <li><strong>Total Disk:</strong> {{ disk_stats.total_gb }} GB</li>
+            <li><strong>Used Disk:</strong> {{ disk_stats.used_gb }} GB</li>
+            <li><strong>Free Disk:</strong> {{ disk_stats.free_gb }} GB</li>
+            <li><strong>Video Directory Size:</strong> {{ video_dir_size }} GB</li>
+        </ul>
+    </div>
+
+{% endblock %}

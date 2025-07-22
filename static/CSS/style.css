@@ -9,27 +9,87 @@ body {
     font-family: 'AncizarSans', sans-serif;
     margin: 30px;
     padding: 0;
+    background-color: #333;
+    color: #f0f0f0;
 }
 
+
+a:link {
+  color:#008000;
+  text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+  color:#008000;  
+}
+
+/* mouse over link */
+a:hover {
+  color: #5CE65C;
+  text-decoration: underline;
+}
+
+/* selected link */
+a:active {
+  color:#008000;
+}
+
+button {
+	background-color:#008000;;
+	border-radius:40px;
+	border:1px solid rgba(0,0,0,0.20);
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:17px;
+	padding:12px 18px;
+	text-decoration:none;
+}
+button:hover {
+	background-color:#5CE65C;
+}
+button:active {
+	position:relative;
+	top:1px;
+}
+
+
+
 nav {
-    background: #f0f0f0;
+    background-color: rgba(0,0,0,0.20);
     padding: 1em;
 }
 
 nav a {
     margin-right: 1em;
+    font-size: 1.2em;
     text-decoration: none;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
 }
 
 main {
     padding: 1em;
 }
 
+.movie-playback {
+    text-align: center;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
+}
+
+.active_frame {
+    width: 100%;
+    height: auto;
+}
+
 #frameProgress {
     color: #669bbc;  /* the progress color */
-    background: lightgrey; /* the background color */
+    background-color: lightgrey; /* the background color */
     height: 20px;
     width: 100%;
     appearance: none;
@@ -42,4 +102,11 @@ main {
 
 .spacer {
     height: 20px; /* Adjust as needed */
+}
+
+.active_status {
+    background: green; 
+    color: white; 
+    padding: 2px 6px; 
+    border-radius: 4px;
 }

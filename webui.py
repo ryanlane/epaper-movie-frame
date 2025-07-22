@@ -28,20 +28,27 @@ with app.app_context():
 def home():
     movies = database.get_all_movies()
     settings = database.get_settings()
+    active_movie = database.get_active_movie()
 
     disk_stats = video_utils.get_disk_usage_stats("/")
     video_dir_size = video_utils.get_directory_size_gb(settings['VideoRootPath'])
+
+    playback_time = None
+    if active_movie:
+        playback_time = video_utils.calculate_playback_time(active_movie)
 
     return render_template(
         "index.html",
         movies=movies,
         disk_stats=disk_stats,
         video_dir_size=round(video_dir_size, 2),
-        dev_mode=config_data.get("DEVELOPMENT_MODE", False)
+        dev_mode=config_data.get("DEVELOPMENT_MODE", False),
+        active_movie=active_movie,
+        playback_time=playback_time
     )
 
 @app.route('/movies')
-def home():
+def movies():
     movies = database.get_all_movies()
     settings = database.get_settings()
 

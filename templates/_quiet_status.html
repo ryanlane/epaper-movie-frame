@@ -1,0 +1,14 @@
+{% set now = current_hour or 0 %}
+
+<div style="padding: 0.5rem; border: 1px solid #ccc; margin-bottom: 1rem; background-color: #f8f8f8;">
+    {% if quiet_info.enabled %}
+        <strong>Quiet Hours:</strong> {{ quiet_info.start }}:00 to {{ quiet_info.end }}:00<br>
+        {% if quiet_info.active %}
+            <span style="color: red;">Updates are currently suppressed (within quiet hours).</span>
+        {% else %}
+            <span style="color: green;">Updates are currently allowed (outside quiet hours).</span>
+        {% endif %}
+    {% else %}
+        <span style="color: green;">Quiet hours are disabled.</span>
+    {% endif %}
+</div>
