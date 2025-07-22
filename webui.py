@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from logging.handlers import RotatingFileHandler
 from utils import video_utils, eframe_inky, config
 from werkzeug.utils import secure_filename
+from datetime import datetime
 import database
 
 config_data = config.read_toml_file("config.toml")
@@ -33,6 +34,22 @@ def home():
 
     return render_template(
         "index.html",
+        movies=movies,
+        disk_stats=disk_stats,
+        video_dir_size=round(video_dir_size, 2),
+        dev_mode=config_data.get("DEVELOPMENT_MODE", False)
+    )
+
+@app.route('/movies')
+def home():
+    movies = database.get_all_movies()
+    settings = database.get_settings()
+
+    disk_stats = video_utils.get_disk_usage_stats("/")
+    video_dir_size = video_utils.get_directory_size_gb(settings['VideoRootPath'])
+
+    return render_template(
+        "movies.html",
         movies=movies,
         disk_stats=disk_stats,
         video_dir_size=round(video_dir_size, 2),

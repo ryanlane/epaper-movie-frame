@@ -2,7 +2,18 @@
 
 set -e  # Exit on first error
 
-VENV_PATH="$HOME/.virtualenvs/movieframe"
+
+# Load ENVIRONMENT from .env if present
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# Determine virtualenv path
+if [ "$ENVIRONMENT" == "development" ]; then
+    VENV_PATH="venv"
+else
+    VENV_PATH="$HOME/.virtualenvs/movieframe"
+fi
 
 # Create virtual environment if not exists
 if [ ! -d "$VENV_PATH" ]; then
