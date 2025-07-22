@@ -28,6 +28,9 @@
         <div id="playback_status"></div>
             {% include "_movie_playback_status.html" %}
         </div>
+    {% else %}
+        <p>No movie is currently playing.</p>
+        <a href="{{ url_for('movies') }}">Select a movie for playback</a>
     {% endif %}
     
 
