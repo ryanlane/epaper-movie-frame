@@ -7,32 +7,32 @@
 
 body {
     font-family: 'AncizarSans', sans-serif;
-    margin: 30px;
-    padding: 0;
+    margin: 0px;
+    padding: 30px;
     background-color: #333;
     color: #f0f0f0;
 }
 
 
 a:link {
-  color:#008000;
+  color:#b5e550;
   text-decoration: none;
 }
 
 /* visited link */
 a:visited {
-  color:#008000;  
+  color:#b5e550;  
 }
 
 /* mouse over link */
 a:hover {
-  color: #5CE65C;
+  color: #abc32f;
   text-decoration: underline;
 }
 
 /* selected link */
 a:active {
-  color:#008000;
+  color:#ececa3;
 }
 
 button {
@@ -97,6 +97,7 @@ main {
 
 .button-container {
     display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
@@ -105,8 +106,34 @@ main {
 }
 
 .active_status {
-    background: green; 
-    color: white; 
-    padding: 2px 6px; 
-    border-radius: 4px;
+    display:inline-block;
+    padding-right: 8px;;
+}
+
+.movie-item {
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+}
+
+.movie-link {
+    display:inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dev-mode-text {
+    color: orange;
+    font-weight: bold;
+}   
+
+body.dev-mode {
+    border: orange 2px solid;
+}
+
+.form-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }

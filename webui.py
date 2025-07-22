@@ -85,7 +85,8 @@ def movie(movie_id):
         "movie_details.html",
         movie=movie,
         current_image_path=current_image_path,
-        playback_time=playback_time
+        playback_time=playback_time,
+        dev_mode=config_data.get("DEVELOPMENT_MODE", False),
     )
 
 @app.route('/add_movie', methods=['POST'])

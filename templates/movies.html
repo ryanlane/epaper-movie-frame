@@ -4,18 +4,13 @@
 {% block content %}
     <h1>Movie Frame Controls</h1>
 
-    {% if dev_mode %}
-        <p style="color: orange;"><strong>Developer Mode:</strong> Frame is not being sent to e-ink display.</p>
-    {% endif %}
-
-
     {% if movies %}        
             {% for movie in movies %}
                 <div class="movie-item">
-                    <span class="movie-link"><a href="{{ url_for('movie', movie_id=movie.id) }}">{{ movie.video_path }}</a></span>
                     {% if movie.isActive %}
-                        <span class="active_status">Active</span>
+                        <div class="active_status">▶️</div>
                     {% endif %}
+                    <div class="movie-link"><a href="{{ url_for('movie', movie_id=movie.id) }}" title="{{ movie.video_path }}">{{ movie.video_path }}</a></div>                  
                 </div>
             {% endfor %}
         

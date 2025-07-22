@@ -7,7 +7,7 @@
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
 </head>
-<body>
+<body {% if dev_mode %}class="dev-mode"{% endif %}>
     <nav>
         <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('movies') }}">Movies</a>
@@ -15,6 +15,9 @@
     </nav>
 
     <main>
+        {% if dev_mode %}
+            <div class="dev-mode-text"><strong>Developer Mode:</strong> Frame is not being sent to e-ink display.</div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 </body>

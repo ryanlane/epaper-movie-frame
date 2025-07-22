@@ -8,7 +8,18 @@
     <title>Available Movies</title>
 </head>
 <body>
-    It looks like this is your first time running this. To get started, please select a video file from the list below:
+   
+</body>
+</html>
+
+{% extends "layout.html" %}
+
+{% block title %}Movie Frame Home{% endblock %}
+{% block content %}
+    <h1>Configure Movie</h1>
+
+
+     It looks like this is your first time setting up this movie file. To get started, please select a video file from the list below:
     <form action="{{ url_for('add_movie') }}" method="post">
         <select name="video_path">
             {% for movie in movies %}
@@ -17,5 +28,5 @@
         </select>
         <input type="submit" value="Select">
     </form>
-</body>
-</html>
+
+{% endblock %}
