@@ -200,6 +200,17 @@ if $DEV_MODE; then
   pip install -e .
 else
   if confirm "Install Raspberry Pi hardware extras (SPI/GPIO)?" Y; then
+    # Optional: ensure system packages needed for GPIO bindings are present
+    if has_cmd apt; then
+      section "Raspberry Pi GPIO system packages"
+      if confirm "Install required system packages (swig, libgpiod-dev)?" Y; then
+        if sudo apt install -y swig libgpiod-dev; then
+          success "Installed swig and libgpiod-dev"
+        else
+          warn "Could not install swig/libgpiod-dev automatically. Continuing; pip may fail if build tools are missing."
+        fi
+      fi
+    fi
     pip install -e '.[rpi]'
   else
     pip install -e .
