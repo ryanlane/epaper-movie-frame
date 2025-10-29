@@ -4,11 +4,9 @@ import threading
 import time
 import requests
 import logging
-import argparse
 import database
 
-import webui
-from utils import video_utils, eframe_inky, config
+from utils import video_utils, eframe_inky
 
 def setup_logger(log_level):
     logging.basicConfig(level=log_level,
@@ -72,7 +70,6 @@ def main():
         set_now_playing(movie_id)
         wait_counter = 0
 
-        from utils import video_utils
         video_utils.play_video(logger)
 
         # Sleep based on DB-defined interval (in minutes)

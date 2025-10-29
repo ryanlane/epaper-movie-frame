@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from logging.handlers import RotatingFileHandler
 from utils import video_utils, eframe_inky, config
 from werkzeug.utils import secure_filename
-from datetime import datetime
 import database
 
 config_data = config.read_toml_file("config.toml")
@@ -79,14 +78,10 @@ def first_run():
 @app.route('/movie/<int:movie_id>')
 def movie(movie_id):
     movie = database.get_movie_by_id(movie_id)
-    settings = database.get_settings()
 
     frame_path = os.path.join(f"static/{movie_id}", "frame.jpg")
     current_image_path = os.path.abspath(frame_path) if os.path.exists(frame_path) else None
 
-    from database import get_movie_by_id, get_settings
-    movie = get_movie_by_id(movie_id)
-    settings = get_settings()
     playback_time = video_utils.calculate_playback_time(movie)
 
     return render_template(

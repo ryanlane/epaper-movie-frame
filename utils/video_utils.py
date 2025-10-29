@@ -1,10 +1,8 @@
 import cv2
 import numpy as np
 import os
-import sys
 import shutil
 from utils import eframe_inky, config
-import sqlite3
 from datetime import datetime, timedelta
 
 DEV_MODE = config.read_toml_file("config.toml").get("DEVELOPMENT_MODE", False)
