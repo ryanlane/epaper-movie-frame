@@ -37,9 +37,15 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 - OpenCV
 - NumPy
 - Pillow
-- `inky[rpi,example-depends]`
-- FastAPI
+- Inky
+- Flask
 - SQLite3 (included with Python)
+
+Note: On Raspberry Pi, additional hardware libraries (SPI/GPIO) are installed via the optional extras group:
+
+```bash
+pip install -e '.[rpi]'
+```
 
 ---
 
@@ -54,40 +60,144 @@ cd epaper-movie-frame
 ### 2. Configure Pi
 Make sure that SPI is enabled via `sudo raspi-config` or by editing `/boot/config.txt.`
 
-### 3. Run system-level setup (one-time only)
+### 3. Run the guided installer (recommended)
 
-This installs required packages like OpenCV, dev headers, and virtualenv support.
+This sets up system packages (optional), creates a Python virtual environment, installs dependencies, writes `.env` and `config.toml`, and can install a systemd service.
 
 ```bash
-chmod +x system-setup.sh
+chmod +x install.sh
+./install.sh
+```
+
+Prefer manual steps? You can skip the installer and follow the "Manual installation (no installer)" section below. You may optionally run system-level deps first:
+
+```bash
+# Optional: system deps (apt)
 ./system-setup.sh
 ```
 
-### 4. Create virtual environment and install Python dependencies
+### Manual installation (no installer)
+
+If you prefer to set everything up by hand (or the installer isn't suitable), follow these steps:
+
+1) System packages (Debian/Ubuntu/Raspberry Pi OS)
 
 ```bash
-chmod +x project-install.sh
-./project-install.sh
+sudo apt update
+sudo apt install -y \
+	python3-venv python3-pip python3-dev \
+	python3-opencv libgl1 libatlas-base-dev libopenjp2-7 libtiff5 \
+	ffmpeg
 ```
 
-### 5. Create your `config.toml`
+2) Create and activate a Python virtual environment, then install the project (editable)
 
-If it doesn’t exist, the app will prompt you. Example contents:
+```bash
+python3 -m venv ./venv
+source ./venv/bin/activate
+python -m pip install --upgrade pip
 
-```toml
+# Desktop/WSL (no hardware):
+pip install -e .
+
+# Raspberry Pi (hardware support):
+pip install -e '.[rpi]'
+```
+
+3) Create configuration files
+
+- `.env` controls how scripts choose the environment and venv path.
+
+```bash
+cat > .env << 'EOF'
+ENVIRONMENT=development   # or production
+VENV_PATH=./venv          # path to your virtualenv
+EOF
+```
+
+- `config.toml` controls app behavior. For development (no hardware), use:
+
+```bash
+cat > config.toml << 'EOF'
+TARGET_WIDTH = 800
+TARGET_HEIGHT = 600
 VIDEO_DIRECTORY = "videos"
-OUTPUT_IMAGE_PATH = "output/frame.jpg"
-DEVELOPMENT_MODE = false
+OUTPUT_IMAGE_PATH = "frame.jpg"
+DEVELOPMENT_MODE = true
+EOF
+```
+
+For hardware on a Pi, set `DEVELOPMENT_MODE = false` and ensure SPI is enabled via `sudo raspi-config` or by editing `/boot/config.txt`.
+
+4) Create needed directories
+
+```bash
+mkdir -p videos
+```
+
+5) Launch the app
+
+```bash
+chmod +x launch.sh
+./launch.sh
+## or, inside the venv
+movieframe
+```
+
+The database and default settings are created automatically on first run.
+
+6) Optional: run as a systemd service (Pi/Linux with systemd)
+
+```bash
+SERVICE_NAME=movieframe
+SERVICE_FILE=/etc/systemd/system/${SERVICE_NAME}.service
+
+sudo tee "$SERVICE_FILE" > /dev/null <<EOF
+[Unit]
+Description=E-Paper Movie Frame
+After=network.target
+
+[Service]
+Type=simple
+User=${USER}
+WorkingDirectory=$(pwd)
+Environment=ENVIRONMENT=${ENVIRONMENT:-production}
+ExecStart=$(pwd)/launch.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable "$SERVICE_NAME"
+sudo systemctl start "$SERVICE_NAME"
+sudo systemctl --no-pager status "$SERVICE_NAME"
 ```
 
 ---
 
 ## 🚀 Launch the App
 
-Use the launch script to activate the environment and run the player:
+After the installer, you can start the app anytime with:
 
 ```bash
 ./launch.sh
+```
+
+Or, from within the virtual environment, you can use the console script:
+
+```bash
+movieframe
+```
+
+If you chose to install a systemd service, it can be managed with:
+
+```bash
+sudo systemctl status movieframe   # or your chosen name
+sudo systemctl start movieframe
+sudo systemctl stop movieframe
 ```
 
 ---
@@ -101,6 +211,8 @@ DEVELOPMENT_MODE = true
 ```
 
 This disables hardware access and renders images to disk instead of using the e-paper display.
+
+Tip: The installer can set this for you. It writes `ENVIRONMENT=development` to `.env` and toggles `DEVELOPMENT_MODE` in `config.toml`.
 
 ---
 
@@ -136,6 +248,17 @@ Features:
 - User Experience Guide: docs/USER_EXPERIENCE.md
 
 These documents support handoff and porting this project to other platforms.
+
+---
+
+## 🧹 Uninstall
+
+To remove the service and local artifacts:
+
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
+```
 
 ---
 

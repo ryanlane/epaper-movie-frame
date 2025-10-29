@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epaper-movie-frame"
+version = "0.1.0"
+description = "Very slow movie player for e-paper displays with Flask web UI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Ryan Lane" }
+]
+dependencies = [
+  "Flask==3.1.1",
+  "requests==2.28.1",
+  "numpy>=2.0.0",
+  "opencv-python==4.11.0.86",
+  "pillow==11.2.1",
+  "qrcode==8.2",
+  "python-dotenv==1.1.0",
+  "toml==0.10.2",
+  "inky==2.1.0"
+]
+
+[project.optional-dependencies]
+# Hardware extras for Raspberry Pi deployments
+rpi = [
+  "spidev==3.7",
+  "smbus2==0.4.2",
+  "rpi-lgpio==0.6",
+  "lgpio==0.2.2.0",
+  "gpiozero==2.0.1",
+  "gpiod==2.3.0",
+  "gpiodevice==0.0.5",
+  "colorzero==2.0"
+]
+
+[project.scripts]
+movieframe = "movieplayer:main"
+
+[tool.setuptools]
+py-modules = ["movieplayer", "webui", "database"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["utils*"]

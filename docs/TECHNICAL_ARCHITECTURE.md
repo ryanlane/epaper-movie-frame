@@ -178,13 +178,13 @@ Key runtime packages:
 - python-dotenv
 - requests (for readiness check)
 
-OS-level considerations (on Raspberry Pi): SPI enabled; Inky drivers and GPIO access (spidev, gpiod, gpiozero, rpi-lgpio) per requirements.txt
+OS-level considerations (on Raspberry Pi): SPI enabled; Inky drivers and GPIO access (spidev, gpiod, gpiozero, rpi-lgpio) via optional 'rpi' extras (pip install -e '.[rpi]').
 
 
 ## Deployment
 
 - Typical target: Raspberry Pi running Linux with Inky Impression attached
-- Scripts: system-setup.sh (apt packages), project-install.sh (venv + pip), launch.sh (activate and start movieplayer.py)
+- Scripts: install.sh (guided setup), system-setup.sh (apt packages), launch.sh (activate and start movieplayer.py)
 - Service installation examples are provided as shell scripts (install_as_service.example.sh)
 
 Network:
@@ -218,7 +218,7 @@ When porting to another platform/service, preserve these contracts:
 
 ## Known Gaps and Opportunities
 
-- models.py (SQLAlchemy) is not used by runtime (SQLite via sqlite3 module is used instead)
+- No SQLAlchemy layer; SQLite is accessed directly via the sqlite3 module (models.py removed)
 - isRandom flag is not implemented in playback logic
 - Some duplicate calls and redundant imports in webui.py (double fetch in /movie route)
 - Minimal error handling and validation for bad/corrupt video files
