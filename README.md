@@ -130,6 +130,15 @@ Features:
 
 ---
 
+## 📚 Documentation
+
+- Technical Architecture: docs/TECHNICAL_ARCHITECTURE.md
+- User Experience Guide: docs/USER_EXPERIENCE.md
+
+These documents support handoff and porting this project to other platforms.
+
+---
+
 ## 🧪 To Do
 
 * [ ] Playlist or folder-based auto playback
