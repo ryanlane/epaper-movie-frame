@@ -120,12 +120,6 @@ fi
 PKG_MGR=""
 if has_cmd apt; then PKG_MGR="apt"; fi
 
-# Detect Raspberry Pi (to decide on hardware extras prompts later)
-IS_PI=false
-if [ -r /proc/device-tree/model ] && grep -qi "raspberry pi" /proc/device-tree/model; then
-  IS_PI=true
-fi
-
 # Ask for system packages
 INSTALL_SYS_DEPS=false
 if [ -n "$PKG_MGR" ]; then
@@ -201,42 +195,16 @@ else
   DEV_MODE=false
 fi
 
-# Install base or hardware-extras depending on mode
-if $DEV_MODE; then
-  pip install -e .
-else
-  if $IS_PI; then
-    if confirm "Install Raspberry Pi hardware extras (SPI/GPIO)?" N; then
-      # Try pip install first; if it fails due to missing build tools, install them and retry
-      set +e
-      pip install -e '.[rpi]'
-      PIP_STATUS=$?
-      set -e
-      if [ $PIP_STATUS -ne 0 ]; then
-        warn "Hardware extras install failed; attempting to install system build tools (swig, liblgpio-dev) and retry."
-        if has_cmd apt; then
-          if sudo apt install -y swig liblgpio-dev; then
-            success "Installed swig and liblgpio-dev"
-          else
-            warn "Could not install swig/liblgpio-dev automatically."
-          fi
-        fi
-        set +e
-        pip install -e '.[rpi]'
-        PIP_STATUS=$?
-        set -e
-        if [ $PIP_STATUS -ne 0 ]; then
-          error "Failed to install Raspberry Pi hardware extras even after installing system build tools. You can retry later after ensuring swig and libgpiod-dev are installed."
-          exit 1
-        fi
-      fi
-    else
-      pip install -e .
-    fi
-  else
-    warn "Non-Raspberry Pi system detected; skipping hardware extras."
-    pip install -e .
-  fi
+# Install Python deps via pip only; no hardware-extras prompts or auto-apt.
+set +e
+pip install -e .
+PIP_STATUS=$?
+set -e
+if [ $PIP_STATUS -ne 0 ]; then
+  warn "pip install failed. If the error mentions 'lgpio' or '-llgpio' on Raspberry Pi, install system packages and retry:"
+  echo "  sudo apt install -y swig liblgpio-dev"
+  error "Aborting due to pip install failure. After installing system packages, re-run ./install.sh or run 'pip install -e .' inside your venv."
+  exit 1
 fi
 
 success "Project installed in editable mode and dependencies installed."
