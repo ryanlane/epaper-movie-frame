@@ -6,7 +6,11 @@ echo "🔧 Updating APT and installing system-level dependencies..."
 sudo apt update
 
 # Detect best-available math/TIFF libs across distros
-apt_has_pkg() { apt-cache show "$1" >/dev/null 2>&1; }
+# Ensure apt-cache show returns a real stanza for this package
+apt_has_pkg() {
+	local pkg="$1"
+	apt-cache show "$pkg" 2>/dev/null | grep -q "^Package: $pkg$"
+}
 
 MATH_PKG="libatlas-base-dev"
 if ! apt_has_pkg "$MATH_PKG"; then
