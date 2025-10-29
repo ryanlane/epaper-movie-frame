@@ -187,8 +187,7 @@ python -m pip install --upgrade pip
 section "Application configuration"
 
 # .env controls how launch.sh picks the venv path via ENVIRONMENT
-ENVIRONMENT_DEFAULT="development"
-if confirm "Use development mode (no hardware, renders to disk)?" Y; then
+if confirm "Use development mode (no hardware, renders to disk)?" N; then
   ENVIRONMENT="development"
   DEV_MODE=true
 else
@@ -226,7 +225,7 @@ if [ ! -f "$CFG_FILE" ]; then
   mkdir -p "$VIDEO_DIR"
   cat > "$CFG_FILE" <<EOF
 TARGET_WIDTH = 800
-TARGET_HEIGHT = 600
+TARGET_HEIGHT = 480
 VIDEO_DIRECTORY = "$VIDEO_DIR"
 OUTPUT_IMAGE_PATH = "frame.jpg"
 DEVELOPMENT_MODE = $DEV_MODE
