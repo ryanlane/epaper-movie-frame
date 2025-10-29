@@ -15,33 +15,50 @@ load_dotenv()
 
 use_fake_data = os.getenv("ENVIRONMENT") == "development"
 
+# Attempt to initialize Inky when not in development mode, but avoid
+# interactive prompts and fail gracefully if detection isn't possible.
+inky = None
 if not use_fake_data:
-    inky = auto(ask_user=True, verbose=True)
+    # Allow forcing model/colour via environment, eg: INKY_TYPE=spectra73 INKY_COLOUR=red
+    forced_type = os.getenv("INKY_TYPE")
+    forced_colour = os.getenv("INKY_COLOUR")
+    try:
+        if forced_type or forced_colour:
+            try:
+                inky = auto(ask_user=False, verbose=True, type=forced_type, colour=forced_colour)
+            except TypeError:
+                # Older inky.auto may not accept type/colour kwargs; fall back to plain auto
+                inky = auto(ask_user=False, verbose=True)
+        else:
+            inky = auto(ask_user=False, verbose=True)
+    except Exception:
+        print("[WARN] Failed to initialise Inky (auto). If you have a board attached, you can set INKY_TYPE (eg 'spectra73')"
+              " and INKY_COLOUR ('red'|'yellow'|'black') in .env. Falling back to non-hardware mode.")
+        use_fake_data = True
+        inky = None
 
 def get_inky_resolution():
-
-    if use_fake_data:
-        return [800,480]
+    # Default to the common Inky Impression 7.3" resolution if hardware is unavailable
+    if use_fake_data or inky is None:
+        return [800, 480]
     else:
-        width = inky.resolution[0]
-        height = inky.resolution[1]
-        res = [width, height]
-        return res
+        width, height = inky.resolution
+        return [width, height]
 
-def show_on_inky(imagepath, saturation = 0.5):
-    if use_fake_data:
-        print("dev build mode: this is when the inky would load the image and display it.")
-    else:
-        # Open the image file and load it into a PIL Image
-        try:
-            image = Image.open(imagepath)
-            inky.set_image(image, saturation=saturation)
-            print("\n frame being displayed on inky")
-            inky.show()
-        except FileNotFoundError:
-            print(f"Error: Image file not found at {imagepath}")
-        except Exception as e:
-            print(f"Error: Unable to open the image. {e}")
+def show_on_inky(imagepath, saturation=0.5):
+    if use_fake_data or inky is None:
+        print("[DEV/NON-HW] Would display image on Inky: skipping hardware update.")
+        return
+    # Open the image file and load it into a PIL Image
+    try:
+        image = Image.open(imagepath)
+        inky.set_image(image, saturation=saturation)
+        print("\n frame being displayed on inky")
+        inky.show()
+    except FileNotFoundError:
+        print(f"Error: Image file not found at {imagepath}")
+    except Exception as e:
+        print(f"Error: Unable to open the image. {e}")
 
 def get_local_ip():
     try:
@@ -54,7 +71,6 @@ def get_local_ip():
         return "Unavailable"
 
 def show_startup_status(movie=None):
-    from .eframe_inky import show_on_inky  # Use relative import inside project
     DEV_MODE = config.read_toml_file("config.toml").get("DEVELOPMENT_MODE", False)
 
     WIDTH = 800
