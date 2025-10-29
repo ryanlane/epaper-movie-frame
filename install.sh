@@ -206,19 +206,30 @@ if $DEV_MODE; then
   pip install -e .
 else
   if $IS_PI; then
-    if confirm "Install Raspberry Pi hardware extras (SPI/GPIO)?" Y; then
-      # Optional: ensure system packages needed for GPIO bindings are present
-      if has_cmd apt; then
-        section "Raspberry Pi GPIO system packages"
-        if confirm "Install required system packages (swig, libgpiod-dev)?" Y; then
-          if sudo apt install -y swig libgpiod-dev; then
-            success "Installed swig and libgpiod-dev"
+    if confirm "Install Raspberry Pi hardware extras (SPI/GPIO)?" N; then
+      # Try pip install first; if it fails due to missing build tools, install them and retry
+      set +e
+      pip install -e '.[rpi]'
+      PIP_STATUS=$?
+      set -e
+      if [ $PIP_STATUS -ne 0 ]; then
+        warn "Hardware extras install failed; attempting to install system build tools (swig, liblgpio-dev) and retry."
+        if has_cmd apt; then
+          if sudo apt install -y swig liblgpio-dev; then
+            success "Installed swig and liblgpio-dev"
           else
-            warn "Could not install swig/libgpiod-dev automatically. Continuing; pip may fail if build tools are missing."
+            warn "Could not install swig/liblgpio-dev automatically."
           fi
         fi
+        set +e
+        pip install -e '.[rpi]'
+        PIP_STATUS=$?
+        set -e
+        if [ $PIP_STATUS -ne 0 ]; then
+          error "Failed to install Raspberry Pi hardware extras even after installing system build tools. You can retry later after ensuring swig and libgpiod-dev are installed."
+          exit 1
+        fi
       fi
-      pip install -e '.[rpi]'
     else
       pip install -e .
     fi

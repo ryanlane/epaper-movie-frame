@@ -87,6 +87,10 @@ sudo apt update
 sudo apt install -y \
 	python3-venv python3-pip python3-dev \
 	libgl1 libopenblas-dev libopenjp2-7 libtiff-dev
+
+# If installing Raspberry Pi hardware extras via pip and it fails to build lgpio,
+# install these and retry the pip step:
+#   sudo apt install -y swig liblgpio-dev
 ```
 
 2) Create and activate a Python virtual environment, then install the project (editable)
