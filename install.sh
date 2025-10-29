@@ -120,6 +120,12 @@ fi
 PKG_MGR=""
 if has_cmd apt; then PKG_MGR="apt"; fi
 
+# Detect Raspberry Pi (to decide on hardware extras prompts later)
+IS_PI=false
+if [ -r /proc/device-tree/model ] && grep -qi "raspberry pi" /proc/device-tree/model; then
+  IS_PI=true
+fi
+
 # Ask for system packages
 INSTALL_SYS_DEPS=false
 if [ -n "$PKG_MGR" ]; then
@@ -199,20 +205,25 @@ fi
 if $DEV_MODE; then
   pip install -e .
 else
-  if confirm "Install Raspberry Pi hardware extras (SPI/GPIO)?" Y; then
-    # Optional: ensure system packages needed for GPIO bindings are present
-    if has_cmd apt; then
-      section "Raspberry Pi GPIO system packages"
-      if confirm "Install required system packages (swig, libgpiod-dev)?" Y; then
-        if sudo apt install -y swig libgpiod-dev; then
-          success "Installed swig and libgpiod-dev"
-        else
-          warn "Could not install swig/libgpiod-dev automatically. Continuing; pip may fail if build tools are missing."
+  if $IS_PI; then
+    if confirm "Install Raspberry Pi hardware extras (SPI/GPIO)?" Y; then
+      # Optional: ensure system packages needed for GPIO bindings are present
+      if has_cmd apt; then
+        section "Raspberry Pi GPIO system packages"
+        if confirm "Install required system packages (swig, libgpiod-dev)?" Y; then
+          if sudo apt install -y swig libgpiod-dev; then
+            success "Installed swig and libgpiod-dev"
+          else
+            warn "Could not install swig/libgpiod-dev automatically. Continuing; pip may fail if build tools are missing."
+          fi
         fi
       fi
+      pip install -e '.[rpi]'
+    else
+      pip install -e .
     fi
-    pip install -e '.[rpi]'
   else
+    warn "Non-Raspberry Pi system detected; skipping hardware extras."
     pip install -e .
   fi
 fi
