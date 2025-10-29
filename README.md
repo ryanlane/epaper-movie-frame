@@ -86,8 +86,7 @@ If you prefer to set everything up by hand (or the installer isn't suitable), fo
 sudo apt update
 sudo apt install -y \
 	python3-venv python3-pip python3-dev \
-	python3-opencv libgl1 libatlas-base-dev libopenjp2-7 libtiff5 \
-	ffmpeg
+	libgl1 libopenblas-dev libopenjp2-7 libtiff-dev
 ```
 
 2) Create and activate a Python virtual environment, then install the project (editable)

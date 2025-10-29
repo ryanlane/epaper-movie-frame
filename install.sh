@@ -134,10 +134,27 @@ if $INSTALL_SYS_DEPS; then
   section "Installing system packages"
   info "Updating apt and installing base libraries (sudo required)."
   sudo apt update
+  # Detect best-available math/TIFF libs across distros
+  apt_has_pkg() { apt-cache show "$1" >/dev/null 2>&1; }
+
+  MATH_PKG="libatlas-base-dev"
+  if ! apt_has_pkg "$MATH_PKG"; then
+    MATH_PKG="libopenblas-dev"
+  fi
+
+  TIFF_PKG="libtiff5"
+  if ! apt_has_pkg "$TIFF_PKG"; then
+    if apt_has_pkg libtiff6; then
+      TIFF_PKG="libtiff6"
+    else
+      TIFF_PKG="libtiff-dev"
+    fi
+  fi
+
+  # Install core packages; rely on pip for opencv-python
   sudo apt install -y \
     python3-venv python3-pip python3-dev \
-    python3-opencv libgl1 libatlas-base-dev libopenjp2-7 libtiff5 \
-    ffmpeg
+    libgl1 "$MATH_PKG" libopenjp2-7 "$TIFF_PKG"
   success "System dependencies installed."
 fi
 
@@ -160,6 +177,21 @@ fi
 source "$VENV_PATH/bin/activate"
 python -m pip install --upgrade pip
 
+# ---------------------------
+# App configuration (choose mode before Python deps)
+# ---------------------------
+section "Application configuration"
+
+# .env controls how launch.sh picks the venv path via ENVIRONMENT
+ENVIRONMENT_DEFAULT="development"
+if confirm "Use development mode (no hardware, renders to disk)?" Y; then
+  ENVIRONMENT="development"
+  DEV_MODE=true
+else
+  ENVIRONMENT="production"
+  DEV_MODE=false
+fi
+
 # Install base or hardware-extras depending on mode
 if $DEV_MODE; then
   pip install -e .
@@ -177,18 +209,6 @@ success "Project installed in editable mode and dependencies installed."
 # ---------------------------
 # App configuration
 # ---------------------------
-section "Application configuration"
-
-# .env controls how launch.sh picks the venv path via ENVIRONMENT
-ENVIRONMENT_DEFAULT="development"
-if confirm "Use development mode (no hardware, renders to disk)?" Y; then
-  ENVIRONMENT="development"
-  DEV_MODE=true
-else
-  ENVIRONMENT="production"
-  DEV_MODE=false
-fi
-
 echo "ENVIRONMENT=$ENVIRONMENT" > .env
 echo "VENV_PATH=$VENV_PATH" >> .env
 success "Wrote .env (ENVIRONMENT=$ENVIRONMENT)."
