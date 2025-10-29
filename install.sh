@@ -123,7 +123,7 @@ if has_cmd apt; then PKG_MGR="apt"; fi
 # Ask for system packages
 INSTALL_SYS_DEPS=false
 if [ -n "$PKG_MGR" ]; then
-  if confirm "Install/Update system dependencies with apt?" Y; then
+  if confirm "Install/Update system dependencies with apt?" N; then
     INSTALL_SYS_DEPS=true
   fi
 else
