@@ -7,6 +7,29 @@ from utils import config
 from dotenv import load_dotenv
 from inky.auto import auto
 
+# Resolve project paths (for bundled fonts fallback)
+HERE = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(HERE)
+FONTS_DIR_PRIMARY = os.path.join(PROJECT_ROOT, "fonts")            # Project fonts (preferred)
+FONTS_DIR_FALLBACK = os.path.join(PROJECT_ROOT, "static", "fonts")  # Legacy/bundled fonts
+
+
+def _load_font(candidates, size):
+    """
+    Try a list of font file candidates and return a loaded PIL ImageFont.
+    Falls back to PIL's default bitmap font if none load.
+    """
+    for path in candidates:
+        try:
+            if path and os.path.isfile(path):
+                return ImageFont.truetype(path, size)
+        except (OSError, IOError):
+            # Try next candidate
+            pass
+    # Final fallback
+    print("[WARN] Project fonts not found; falling back to default bitmap font.")
+    return ImageFont.load_default()
+
 # since I'm not writing my code directly on the raspberry pi, I'm using the .env
 # to handle whether or not I want to expose the actual inky hardware
 
@@ -78,8 +101,20 @@ def show_startup_status(movie=None):
     image = Image.new("RGB", (WIDTH, HEIGHT), (255, 255, 255))
     draw = ImageDraw.Draw(image)
 
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 36)
-    small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+    # Prefer Lato from project fonts, then fall back to bundled Ancizar if present
+    title_font = _load_font([
+        os.path.join(FONTS_DIR_PRIMARY, "Lato-Bold.ttf"),
+        os.path.join(FONTS_DIR_PRIMARY, "Lato-Regular.ttf"),
+        os.path.join(FONTS_DIR_FALLBACK, "AncizarSans-VariableFont_wght.ttf"),
+        os.path.join(FONTS_DIR_FALLBACK, "AncizarSans-Italic-VariableFont_wght.ttf"),
+    ], 36)
+    small_font = _load_font([
+        os.path.join(FONTS_DIR_PRIMARY, "Lato-Regular.ttf"),
+        os.path.join(FONTS_DIR_PRIMARY, "Lato-Light.ttf"),
+        os.path.join(FONTS_DIR_PRIMARY, "Lato-Bold.ttf"),
+        os.path.join(FONTS_DIR_FALLBACK, "AncizarSans-VariableFont_wght.ttf"),
+        os.path.join(FONTS_DIR_FALLBACK, "AncizarSans-Italic-VariableFont_wght.ttf"),
+    ], 24)
 
     draw.text((20, 20), "E-Paper Movie Frame", font=title_font, fill=(0, 0, 0))
     draw.text((20, 80), f"Service started: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", font=small_font, fill=(0, 0, 0))

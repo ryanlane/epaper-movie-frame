@@ -139,6 +139,9 @@ if $IS_RPI && [ "${PY_MAJOR:-0}" -eq 3 ] && [ "${PY_MINOR:-0}" -ge 13 ]; then
   section "Raspberry Pi: Python $PY_VER detected"
   warn "Python $PY_VER is newer than what many Pi wheels support today."
   warn "C-extensions (like spidev) may fail to build without matching Python headers."
+  info "You can choose between two setup paths:"
+  info "  Path A (recommended): Uses system Python and apt's spidev; fastest and most reliable on Pi."
+  info "  Path B: Keep your custom Python and compile spidev; requires matching python3.X-dev headers."
 
   if confirm "Use Path A (RECOMMENDED): system Python + apt spidev + venv with system site packages?" Y; then
     PI_ENV_PATH="A"
@@ -166,6 +169,8 @@ if has_cmd apt; then PKG_MGR="apt"; fi
 # Ask for system packages
 INSTALL_SYS_DEPS=false
 if [ -n "$PKG_MGR" ]; then
+  info "Optionally install system packages via apt (build tools and libraries used by OpenCV, TIFF/JP2, and Python headers)."
+  info "Recommended on Raspberry Pi or fresh installs. Safe to skip if you've already installed these."
   if confirm "Install/Update system dependencies with apt?" N; then
     INSTALL_SYS_DEPS=true
   fi
@@ -211,6 +216,10 @@ fi
 # ---------------------------
 section "Python virtual environment"
 DEFAULT_VENV="$PROJECT_ROOT/venv"
+info "We'll create a Python virtual environment to isolate this project's Python packages."
+if [ -n "$VENV_SITEPKG_FLAG" ]; then
+  info "Because you selected Path A, the venv will include --system-site-packages so it can use apt-installed modules like spidev."
+fi
 VENV_PATH=$(prompt "Where should the virtual environment live?" "$DEFAULT_VENV")
 
 if [ ! -d "$VENV_PATH" ]; then
@@ -230,6 +239,8 @@ python -m pip install --upgrade pip
 section "Application configuration"
 
 # .env controls how launch.sh picks the venv path via ENVIRONMENT
+info "Development mode disables hardware access and writes rendered frames to disk for testing on non-Pi machines."
+info "Production mode targets the Inky display; ensure SPI is enabled and hardware is connected."
 if confirm "Use development mode (no hardware, renders to disk)?" N; then
   ENVIRONMENT="development"
   DEV_MODE=true
@@ -246,6 +257,7 @@ set -e
 if [ $PIP_STATUS -ne 0 ]; then
   warn "pip install failed. If the error mentions 'lgpio' or '-llgpio' on Raspberry Pi, install system packages and retry:"
   echo "  sudo apt install -y swig liblgpio-dev"
+  warn "If errors mention 'Python.h' missing on Pi, see README Troubleshooting for Path A/Path B guidance."
   error "Aborting due to pip install failure. After installing system packages, re-run ./install.sh or run 'pip install -e .' inside your venv."
   exit 1
 fi
@@ -331,7 +343,10 @@ fi
 # ---------------------------
 if has_cmd systemctl; then
   section "System service (optional)"
+  info "This will install a systemd service so the app starts on boot and can be managed with systemctl."
+  info "You'll be asked for a service name and which user it should run as (non-root recommended)."
   if confirm "Install as a systemd service (run on boot)?" N; then
+    info "Pick a simple, lowercase service name. A file will be created in /etc/systemd/system/<name>.service."
     SERVICE_NAME=$(prompt "Service name" "movieframe")
     RUN_AS_USER=$(prompt "Run service as user" "${USER:-pi}")
 
@@ -377,10 +392,12 @@ fi
 # Launch option
 # ---------------------------
 section "Ready to launch"
+info "You can launch now to test the web UI. Default port is 8000; browse to http://<your-pi-ip>:8000."
 if confirm "Start the app now in the foreground?" N; then
   ./launch.sh || true
 else
   info "You can start later by running: ./launch.sh"
+  info "From inside the venv, you can also use the console command: 'movieframe'"
 fi
 
 success "Installation complete. Enjoy!"
