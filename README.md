@@ -61,7 +61,6 @@ Make sure that SPI is enabled via `sudo raspi-config` or by editing `/boot/confi
 This sets up system packages (optional), creates a Python virtual environment, installs dependencies, writes `.env` and `config.toml`, and can install a systemd service.
 
 ```bash
-chmod +x install.sh
 ./install.sh
 ```
 
