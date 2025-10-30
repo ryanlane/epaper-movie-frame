@@ -47,6 +47,17 @@ Note: On Raspberry Pi, you’ll also need SPI enabled and spidev available; see 
 
 ## ⚙️ Setup
 
+### 0. Pre-step (Raspberry Pi only)
+
+If you haven’t followed Pimoroni’s Inky setup yet, at minimum enable SPI and reboot. You can do the full Pimoroni setup later if needed, but SPI must be on:
+
+Pimoroni guide: https://learn.pimoroni.com/article/getting-started-with-inky-impression
+
+```bash
+sudo raspi-config nonint do_spi 0
+sudo reboot
+```
+
 ### 1. Clone the repo
 
 ```bash
