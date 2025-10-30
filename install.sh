@@ -116,6 +116,49 @@ else
   exit 1
 fi
 
+# Detect Raspberry Pi and handle Python 3.13+ C-extension header issues
+IS_RPI=false
+if [ -f /proc/device-tree/model ] && grep -qi "raspberry pi" /proc/device-tree/model 2>/dev/null; then
+  IS_RPI=true
+fi
+
+PY_MAJOR=$(echo "$PY_VER" | cut -d. -f1)
+PY_MINOR=$(echo "$PY_VER" | cut -d. -f2)
+
+# Make apt package check helper available early
+apt_has_pkg() {
+  local pkg="$1"
+  apt-cache show "$pkg" 2>/dev/null | grep -q "^Package: $pkg$"
+}
+
+APT_EXTRA_PKGS=""
+VENV_SITEPKG_FLAG=""
+PI_ENV_PATH=""
+
+if $IS_RPI && [ "${PY_MAJOR:-0}" -eq 3 ] && [ "${PY_MINOR:-0}" -ge 13 ]; then
+  section "Raspberry Pi: Python $PY_VER detected"
+  warn "Python $PY_VER is newer than what many Pi wheels support today."
+  warn "C-extensions (like spidev) may fail to build without matching Python headers."
+
+  if confirm "Use Path A (RECOMMENDED): system Python + apt spidev + venv with system site packages?" Y; then
+    PI_ENV_PATH="A"
+    VENV_SITEPKG_FLAG="--system-site-packages"
+    APT_EXTRA_PKGS="python3 python3-venv python3-dev python3-pip python3-spidev build-essential"
+    info "Selected Path A. We'll prefer apt's spidev and share it into the venv."
+  else
+    PI_ENV_PATH="B"
+    # Try to install a matching dev headers package if available
+    DEV_PKG="python3.${PY_MINOR}-dev"
+    if apt_has_pkg "$DEV_PKG"; then
+      APT_EXTRA_PKGS="${APT_EXTRA_PKGS} ${DEV_PKG} build-essential"
+      info "Selected Path B. Will install $DEV_PKG for header files."
+    else
+      APT_EXTRA_PKGS="${APT_EXTRA_PKGS} build-essential"
+      warn "Package $DEV_PKG not found. If build fails, consider Path A or install a supported Python (3.11/3.12) via pyenv."
+    fi
+  fi
+fi
+
 # Detect package manager
 PKG_MGR=""
 if has_cmd apt; then PKG_MGR="apt"; fi
@@ -158,7 +201,7 @@ if $INSTALL_SYS_DEPS; then
   # Install core packages; rely on pip for opencv-python
   sudo apt install -y \
     python3-venv python3-pip python3-dev \
-    libgl1 "$MATH_PKG" libopenjp2-7 "$TIFF_PKG"
+    libgl1 "$MATH_PKG" libopenjp2-7 "$TIFF_PKG" ${APT_EXTRA_PKGS}
   success "System dependencies installed."
 fi
 
@@ -172,7 +215,7 @@ VENV_PATH=$(prompt "Where should the virtual environment live?" "$DEFAULT_VENV")
 
 if [ ! -d "$VENV_PATH" ]; then
   info "Creating venv at $VENV_PATH"
-  python3 -m venv "$VENV_PATH"
+  python3 -m venv $VENV_SITEPKG_FLAG "$VENV_PATH"
 else
   info "Using existing venv at $VENV_PATH"
 fi
@@ -208,6 +251,43 @@ if [ $PIP_STATUS -ne 0 ]; then
 fi
 
 success "Project installed in editable mode and dependencies installed."
+
+# If on Raspberry Pi and Path B, attempt to build/install spidev in this venv
+if [ "${PI_ENV_PATH:-}" = "B" ]; then
+  section "Installing spidev for custom Python"
+  python -V || true
+  info "Upgrading build tooling and installing spidev via pip (will compile if needed)."
+  pip install --upgrade pip setuptools wheel || true
+  if pip install spidev; then
+    success "Installed spidev via pip."
+  else
+    warn "Failed to install spidev. Ensure matching Python headers are installed (e.g., python${PY_VER}-dev) or switch to Path A."
+  fi
+fi
+
+# Verify spidev availability
+if $IS_RPI; then
+  section "Verifying spidev"
+  if python - <<'PY'
+try:
+    import spidev
+    import sys
+    print(f"spidev OK, version: {getattr(spidev, '__version__', 'unknown')}")
+except Exception as e:
+    import sys
+    print(f"spidev import failed: {e}")
+    sys.exit(1)
+PY
+  then
+    success "spidev is available to Python."
+  else
+    if [ "${PI_ENV_PATH:-}" = "A" ]; then
+      warn "spidev not found in venv. Ensure 'python3-spidev' is installed via apt and that this venv uses --system-site-packages."
+    else
+      warn "spidev not found. Try 'sudo apt install python3.${PY_MINOR}-dev build-essential' (if available) and re-run, or switch to Path A."
+    fi
+  fi
+fi
 
 
 # ---------------------------

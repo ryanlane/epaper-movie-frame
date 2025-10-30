@@ -41,11 +41,7 @@ This Python project plays a video back at an extremely slow pace, updating a fra
 - Flask
 - SQLite3 (included with Python)
 
-Note: On Raspberry Pi, additional hardware libraries (SPI/GPIO) are installed via the optional extras group:
-
-```bash
-pip install -e '.[rpi]'
-```
+Note: On Raspberry Pi, you’ll also need SPI enabled and spidev available; see Troubleshooting below if you run into header or build errors.
 
 ---
 
@@ -104,7 +100,10 @@ python -m pip install --upgrade pip
 pip install -e .
 
 # Raspberry Pi (hardware support):
-pip install -e '.[rpi]'
+# Install dependencies including Inky and related libs from requirements.txt,
+# then install this project in editable mode.
+pip install -r requirements.txt
+pip install -e .
 ```
 
 3) Create configuration files
@@ -131,6 +130,49 @@ EOF
 ```
 
 For hardware on a Pi, set `DEVELOPMENT_MODE = false` and ensure SPI is enabled via `sudo raspi-config` or by editing `/boot/config.txt`.
+
+---
+
+## 🛠️ Troubleshooting
+
+### Raspberry Pi: Python.h missing or C-extension build errors (e.g., on Python 3.13)
+
+Some Pi OS releases ship Python 3.13, while many wheels/extensions (like spidev) lag behind. If you see errors like “Python.h not found,” you have two good paths:
+
+Path A (recommended): use system Python + apt’s spidev
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv python3-dev python3-pip python3-spidev build-essential
+
+# Create a venv that can see apt-installed packages like spidev
+python3 -m venv --system-site-packages .venv
+source .venv/bin/activate
+python -c "import spidev; print('spidev OK, version:', getattr(spidev, '__version__', 'unknown'))"
+```
+
+Path B: stay on your custom Python and compile spidev
+
+```bash
+# If your OS provides matching dev headers for your Python, e.g. 3.13:
+sudo apt update
+sudo apt install -y python3.13-dev build-essential
+
+# Activate your venv and build spidev
+source venv/bin/activate   # or your venv path
+python -V                  # confirm it matches the headers you installed
+pip install --upgrade pip setuptools wheel
+pip install spidev
+```
+
+If python3.13-dev isn’t available on your Pi OS release, either switch to Path A, install a supported Python (3.11/3.12) via pyenv, or build Python from source with headers.
+
+### Inky installation issues
+
+If installing `inky` via pip fails on your Pi or the display doesn’t respond, follow Pimoroni’s guide to prepare the Inky stack at the OS level:
+
+Getting Started with Inky Impression (Pimoroni):
+https://learn.pimoroni.com/article/getting-started-with-inky-impression
 
 4) Create needed directories
 
