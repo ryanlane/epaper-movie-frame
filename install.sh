@@ -171,7 +171,7 @@ INSTALL_SYS_DEPS=false
 if [ -n "$PKG_MGR" ]; then
   info "Optionally install system packages via apt (build tools and libraries used by OpenCV, TIFF/JP2, and Python headers)."
   info "Recommended on Raspberry Pi or fresh installs. Safe to skip if you've already installed these."
-  if confirm "Install/Update system dependencies with apt?" N; then
+  if confirm "Install/Update system dependencies with apt?" Y; then
     INSTALL_SYS_DEPS=true
   fi
 else
