@@ -24,19 +24,6 @@ dependencies = [
   "inky>=2"
 ]
 
-[project.optional-dependencies]
-# Hardware extras for Raspberry Pi deployments
-rpi = [
-  "spidev==3.7",
-  "smbus2==0.4.2",
-  "rpi-lgpio==0.6",
-  "lgpio==0.2.2.0",
-  "gpiozero==2.0.1",
-  "gpiod==2.3.0",
-  "gpiodevice==0.0.5",
-  "colorzero==2.0"
-]
-
 [project.scripts]
 movieframe = "movieplayer:main"
 
