@@ -129,6 +129,7 @@ main {
     padding: 12px 0;
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .movie-link {
@@ -136,6 +137,28 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 1;
+}
+
+.delete-form {
+    display: inline-block;
+    margin: 0;
+}
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    font-size: 1.2em;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+    background: rgba(255,0,0,0.2);
+    border-radius: 4px;
 }
 
 .dev-mode-text {
