@@ -6,14 +6,12 @@
 
     {% if movies %}        
             {% for movie in movies %}
-                <div class="movie-item">
+                <div class="movie-item" data-movie-id="{{ movie.id }}">
                     {% if movie.isActive %}
                         <div class="active_status">▶️</div>
                     {% endif %}
                     <div class="movie-link"><a href="{{ url_for('movie', movie_id=movie.id) }}" title="{{ movie.video_path }}">{{ movie.video_path }}</a></div>
-                    <form action="{{ url_for('delete_movie', movie_id=movie.id) }}" method="post" class="delete-form" onsubmit="return confirm('Delete this movie?');">
-                        <button type="submit" class="delete-btn" title="Delete movie">🗑️</button>
-                    </form>
+                    <button type="button" class="delete-btn" title="Delete movie" onclick="deleteMovie({{ movie.id }}, this)">🗑️</button>
                 </div>
             {% endfor %}
         
@@ -34,5 +32,34 @@
             <li><strong>Video Directory Size:</strong> {{ video_dir_size }} GB</li>
         </ul>
     </div>
+
+    <script>
+    function deleteMovie(movieId, btn) {
+        if (!confirm('Delete this movie?')) return;
+        
+        const row = btn.closest('.movie-item');
+        btn.disabled = true;
+        btn.textContent = '⏳';
+        
+        fetch('/delete_movie/' + movieId, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    row.style.transition = 'opacity 0.3s';
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 300);
+                } else {
+                    alert('Failed to delete movie');
+                    btn.disabled = false;
+                    btn.textContent = '🗑️';
+                }
+            })
+            .catch(err => {
+                alert('Error deleting movie: ' + err);
+                btn.disabled = false;
+                btn.textContent = '🗑️';
+            });
+    }
+    </script>
 
 {% endblock %}
